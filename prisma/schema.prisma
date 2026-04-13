@@ -1,0 +1,23 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  title        String   @default("Untitled")
+  artist       String   @default("")
+  audioPath    String
+  artworkPath  String
+  lyrics       String   @default("[]")
+  template     String   @default("circle")
+  typoStyle    String   @default("minimal")
+  accentColor  String   @default("#a855f7")
+  renderStatus String   @default("idle")
+  outputPath   String   @default("")
+  createdAt    DateTime @default(now())
+}
