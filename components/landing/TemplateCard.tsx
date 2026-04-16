@@ -9,10 +9,13 @@ const ParticlesThumb   = dynamic(() => import('./thumbs/ParticlesThumb'),   { ss
 const CassetteThumb    = dynamic(() => import('./thumbs/CassetteThumb'),    { ssr: false })
 const NeonPlayerThumb  = dynamic(() => import('./NeonPlayerThumb'),         { ssr: false })
 const ApplePlayerThumb = dynamic(() => import('./thumbs/ApplePlayerThumb'), { ssr: false })
+const PosterThumb      = dynamic(() => import('./thumbs/PosterThumb'),      { ssr: false })
+const DashboardThumb   = dynamic(() => import('./thumbs/DashboardThumb'),   { ssr: false })
+const CircularThumb    = dynamic(() => import('./thumbs/CircularThumb'),    { ssr: false })
 
 type TemplateId =
   | 'circle' | 'vinyl' | 'waveform' | 'glitch'
-  | 'particles' | 'cassette' | 'neonplayer' | 'appleplayer'
+  | 'particles' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular'
 
 interface Props {
   id: TemplateId
@@ -33,6 +36,9 @@ function ThumbRenderer({ id, accent }: { id: TemplateId; accent: string }) {
   if (id === 'cassette')    return <CassetteThumb />
   if (id === 'neonplayer')  return <NeonPlayerThumb accent={accent} />
   if (id === 'appleplayer') return <ApplePlayerThumb />
+  if (id === 'poster')      return <PosterThumb />
+  if (id === 'dashboard')   return <DashboardThumb />
+  if (id === 'circular')    return <CircularThumb />
   return null
 }
 

@@ -24,7 +24,7 @@ export interface AppState {
   lyricsSynced: boolean
   lyricsFont: string
 
-  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer'
+  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular'
   typoStyle: 'minimal' | 'bold' | 'neon'
   accentColor: string
   labelText: string

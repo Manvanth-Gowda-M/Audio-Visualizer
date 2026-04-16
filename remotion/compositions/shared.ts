@@ -7,6 +7,10 @@ export interface VisualizerProps {
   durationInSeconds: number
   lyricsFont?: string
   effects?: string[]
+  // Optional metadata for templates that display text
+  songTitle?: string
+  artistName?: string
+  albumName?: string
 }
 
 export function getActiveLyric(

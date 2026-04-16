@@ -25,7 +25,9 @@ const TEMPLATES = [
   { id: 'particles',name: 'Particles',    tag: 'Dynamic',  desc: 'Particle field that bursts with bass energy',       accent: '#6366f1' },
   { id: 'cassette',   name: 'Cassette',    tag: 'Retro',   desc: 'Tape deck with spinning reels and VU meters',        accent: '#f59e0b' },
   { id: 'neonplayer',  name: 'Neon Player',  tag: 'Premium', desc: 'Pyramid EQ bars, neon artwork card & progress line', accent: '#a855f7' },
-  { id: 'appleplayer', name: 'Apple Player', tag: '✦ New',   desc: 'Premium iOS-style glassmorphism music player card',  accent: '#e8e0d0' },
+  { id: 'appleplayer', name: 'Apple Player', tag: '✦ New',    desc: 'Premium iOS-style glassmorphism music player card',  accent: '#e8e0d0' },
+  { id: 'poster',      name: 'Music Poster',  tag: '✦ Premium', desc: 'Pastel gradient with vinyl, waveforms & neumorphic controls', accent: '#a855f7' },
+  { id: 'dashboard',   name: 'Dashboard',     tag: '✦ New',     desc: 'Minimal SaaS card with smooth curved waveform',               accent: '#00e676' },
 ]
 
 export default function HomePage() {

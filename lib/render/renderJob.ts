@@ -1,6 +1,57 @@
 import path from 'path'
 import { mkdir } from 'fs/promises'
+import { existsSync } from 'fs'
 import prisma from '../prisma'
+
+/* ── Resolve Chrome path — use cached download, never re-download ── */
+function getChromePath(): string | undefined {
+  const candidates = [
+    // Remotion's own cached download
+    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'win64', 'chrome-headless-shell-win64', 'chrome-headless-shell.exe'),
+    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'linux64', 'chrome-headless-shell-linux64', 'chrome-headless-shell'),
+    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'mac-arm64', 'chrome-headless-shell-mac-arm64', 'chrome-headless-shell'),
+    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'mac-x64', 'chrome-headless-shell-mac-x64', 'chrome-headless-shell'),
+    // System Chrome fallbacks
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  ]
+  return candidates.find(p => existsSync(p))
+}
+
+/* ── Bundle cache — reuse across renders instead of re-bundling every time ── */
+let cachedBundleLocation: string | null = null
+let bundleInProgress: Promise<string> | null = null
+
+async function getBundleLocation(): Promise<string> {
+  // Return cached bundle if available
+  if (cachedBundleLocation) return cachedBundleLocation
+
+  // If a bundle is already in progress, wait for it
+  if (bundleInProgress) return bundleInProgress
+
+  bundleInProgress = (async () => {
+    console.log('[Bundle] Starting Remotion bundle...')
+    const { bundle } = await import('@remotion/bundler')
+    const loc = await bundle({
+      entryPoint: path.join(process.cwd(), 'remotion', 'Root.tsx'),
+      webpackOverride: (config) => config,
+    })
+    console.log('[Bundle] Done:', loc)
+    cachedBundleLocation = loc
+    bundleInProgress = null
+    return loc
+  })()
+
+  return bundleInProgress
+}
+
+/* ── Pre-warm the bundle on server start (call this once) ── */
+export function prewarmBundle() {
+  getBundleLocation().catch(() => {})
+}
 
 export async function startRenderJob(projectId: string, durationInSeconds = 210) {
   const project = await prisma.project.findUnique({ where: { id: projectId } })
@@ -12,51 +63,91 @@ export async function startRenderJob(projectId: string, durationInSeconds = 210)
   })
 
   try {
-    const { bundle } = await import('@remotion/bundler')
     const { renderMedia, selectComposition } = await import('@remotion/renderer')
 
     const compositionId =
-      project.template === 'circle'
-        ? 'CircleVisualizer'
-        : project.template === 'waveform'
-        ? 'WaveformVisualizer'
-        : project.template === 'particles'
-        ? 'ParticlesVisualizer'
-        : project.template === 'vinyl'
-        ? 'VinylVisualizer'
-        : project.template === 'glitch'
-        ? 'GlitchVisualizer'
-        : project.template === 'cassette'
-        ? 'CassetteVisualizer'
-        : project.template === 'neonplayer'
-        ? 'NeonPlayerVisualizer'
-        : 'ApplePlayerVisualizer'
+      project.template === 'circle'     ? 'CircleVisualizer'
+      : project.template === 'waveform' ? 'WaveformVisualizer'
+      : project.template === 'particles'? 'ParticlesVisualizer'
+      : project.template === 'vinyl'    ? 'VinylVisualizer'
+      : project.template === 'glitch'   ? 'GlitchVisualizer'
+      : project.template === 'cassette' ? 'CassetteVisualizer'
+      : project.template === 'neonplayer'? 'NeonPlayerVisualizer'
+      : project.template === 'poster'   ? 'PosterVisualizer'
+      : project.template === 'dashboard'? 'DashboardVisualizer'
+      : project.template === 'circular' ? 'CircularPlayerVisualizer'
+      : 'ApplePlayerVisualizer'
 
-    const bundleLocation = await bundle({
-      entryPoint: path.join(process.cwd(), 'remotion', 'Root.tsx'),
-      webpackOverride: (config) => config,
-    })
+    // Use cached bundle — massive speedup
+    const bundleLocation = await getBundleLocation()
 
-    const isApple = project.template === 'appleplayer'
+    const baseUrl = `http://localhost:${process.env.PORT || 3000}`
+    const isApple    = project.template === 'appleplayer'
+    const isPortrait = isApple || project.template === 'circular'
+
+    // Verify files exist before starting render
+    const { existsSync: fileExists } = await import('fs')
+    const audioAbsPath  = path.join(process.cwd(), 'public', project.audioPath)
+    const artworkAbsPath = path.join(process.cwd(), 'public', project.artworkPath)
+
+    if (!fileExists(audioAbsPath)) {
+      throw new Error(`Audio file not found: ${audioAbsPath}`)
+    }
+    if (!fileExists(artworkAbsPath)) {
+      throw new Error(`Artwork file not found: ${artworkAbsPath}`)
+    }
+
+    console.log('[Render] Audio:', audioAbsPath)
+    console.log('[Render] Artwork:', artworkAbsPath)
+    console.log('[Render] Template:', project.template, '→', compositionId)
+
     const inputProps = isApple ? {
-      audioSrc: `http://localhost:${process.env.PORT || 3000}${project.audioPath}`,
-      artworkSrc: `http://localhost:${process.env.PORT || 3000}${project.artworkPath}`,
-      songTitle: project.title,
+      audioSrc:   `${baseUrl}${project.audioPath}`,
+      artworkSrc: `${baseUrl}${project.artworkPath}`,
+      songTitle:  project.title,
       artistName: project.artist,
-      labelText: project.labelText || 'Now Playing',
+      labelText:  project.labelText || 'Now Playing',
       durationInSeconds,
       themeColor: project.themeColor || 'white',
-      fontStyle: project.fontStyle || 'minimal',
+      fontStyle:  project.fontStyle  || 'minimal',
     } : {
-      audioSrc: `http://localhost:${process.env.PORT || 3000}${project.audioPath}`,
-      artworkSrc: `http://localhost:${process.env.PORT || 3000}${project.artworkPath}`,
-      lyrics: JSON.parse(project.lyrics),
+      audioSrc:   `${baseUrl}${project.audioPath}`,
+      artworkSrc: `${baseUrl}${project.artworkPath}`,
+      lyrics:     JSON.parse(project.lyrics),
       accentColor: project.accentColor,
-      typoStyle: project.typoStyle,
+      typoStyle:  project.typoStyle,
       durationInSeconds,
       lyricsFont: project.fontStyle || 'inter',
-      effects: JSON.parse(project.effects || '[]'),
+      effects:    JSON.parse(project.effects || '[]'),
+      songTitle:  project.title,
+      artistName: project.artist,
+      albumName:  project.labelText || 'Album',
     }
+
+    // Quality → resolution + CRF
+    const qualityMap: Record<string, { w: number; h: number; crf: number }> = {
+      draft:  { w: 854,  h: 480,  crf: 32 },
+      hd:     { w: 1280, h: 720,  crf: 26 },
+      fullhd: { w: 1920, h: 1080, crf: 22 },
+      '4k':   { w: 3840, h: 2160, crf: 18 },
+    }
+    const q = qualityMap[project.exportQuality || 'fullhd'] ?? qualityMap.fullhd
+
+    const aspectMap: Record<string, { w: number; h: number }> = {
+      '16:9': { w: q.w, h: q.h },
+      '9:16': { w: q.h, h: q.w },
+      '1:1':  { w: q.h, h: q.h },
+      '4:5':  { w: Math.round(q.h * 4 / 5), h: q.h },
+    }
+    // Portrait templates always render 9:16 regardless of export aspect setting
+    const defaultAspect = isPortrait ? '9:16' : (project.exportAspect || '16:9')
+    const dims = aspectMap[defaultAspect] ?? aspectMap['16:9']
+
+    const codecMap: Record<string, 'h264' | 'vp8' | 'gif'> = {
+      mp4: 'h264', webm: 'vp8', gif: 'gif',
+    }
+    const codec = codecMap[project.exportFormat || 'mp4'] ?? 'h264'
+    const ext   = codec === 'vp8' ? 'webm' : codec === 'gif' ? 'gif' : 'mp4'
 
     const composition = await selectComposition({
       serveUrl: bundleLocation,
@@ -64,60 +155,60 @@ export async function startRenderJob(projectId: string, durationInSeconds = 210)
       inputProps,
     })
 
-    // Override durationInFrames with actual song duration
-    const actualDurationInFrames = Math.ceil(durationInSeconds * 30)
-
-    // Quality → resolution map
-    const qualityMap: Record<string, { w: number; h: number; crf: number }> = {
-      draft:  { w: 854,  h: 480,  crf: 28 },
-      hd:     { w: 1280, h: 720,  crf: 23 },
-      fullhd: { w: 1920, h: 1080, crf: 18 },
-      '4k':   { w: 3840, h: 2160, crf: 16 },
-    }
-    const q = qualityMap[project.exportQuality || 'fullhd'] ?? qualityMap.fullhd
-
-    // Aspect ratio → composition dimensions
-    const aspectMap: Record<string, { w: number; h: number }> = {
-      '16:9': { w: q.w, h: q.h },
-      '9:16': { w: q.h, h: q.w },
-      '1:1':  { w: q.h, h: q.h },
-      '4:5':  { w: Math.round(q.h * 4/5), h: q.h },
-    }
-    const dims = aspectMap[project.exportAspect || '16:9'] ?? aspectMap['16:9']
-
-    // Format → codec map
-    const codecMap: Record<string, 'h264' | 'vp8' | 'gif'> = {
-      mp4:  'h264',
-      webm: 'vp8',
-      gif:  'gif',
-    }
-    const codec = codecMap[project.exportFormat || 'mp4'] ?? 'h264'
-    const ext   = project.exportFormat === 'webm' ? 'webm' : project.exportFormat === 'gif' ? 'gif' : 'mp4'
-
     const outputDir = path.join(process.cwd(), 'public', 'outputs')
     await mkdir(outputDir, { recursive: true })
     const outputLocation = path.join(outputDir, `${projectId}.${ext}`)
 
+    const chromePath = getChromePath()
+    console.log('[Render] Chrome:', chromePath ?? 'auto-detect')
+    console.log('[Render] Output:', outputLocation)
+    console.log('[Render] Frames:', Math.ceil(durationInSeconds * 30), 'at', dims.w, 'x', dims.h)
+
     await renderMedia({
       composition: {
         ...composition,
-        durationInFrames: actualDurationInFrames,
-        width: dims.w,
+        durationInFrames: Math.ceil(durationInSeconds * 30),
+        width:  dims.w,
         height: dims.h,
       },
-      serveUrl: bundleLocation,
+      serveUrl:     bundleLocation,
       codec,
       outputLocation,
       inputProps,
-      ...(codec === 'h264' ? { crf: q.crf } : {}),
+      concurrency:  Math.max(1, require('os').cpus().length - 1),
+      ...(codec === 'h264' ? {
+        crf: q.crf,
+        x264Preset: project.exportQuality === 'draft'  ? 'ultrafast'
+          : project.exportQuality === 'hd'             ? 'faster'
+          : project.exportQuality === '4k'             ? 'slow'
+          : 'medium',
+      } : {}),
+      timeoutInMilliseconds: 5 * 60 * 1000,
+      chromiumOptions: {
+        disableWebSecurity: true,
+      },
+      ...(chromePath ? { browserExecutable: chromePath } : {}),
+      onProgress: ({ progress }) => {
+        const pct = Math.round(progress * 100)
+        if (pct % 5 === 0) console.log(`[Render] ${pct}%`)
+      },
     })
+
+    console.log('[Render] Encoding done, updating DB...')
+
+    // Reconnect prisma in case connection dropped during long render
+    try {
+      await prisma.$connect()
+    } catch {}
 
     await prisma.project.update({
       where: { id: projectId },
       data: { renderStatus: 'done', outputPath: `/outputs/${projectId}.${ext}` },
     })
 
-    return `/outputs/${projectId}.mp4`
+    console.log('[Render] DB updated → done')
+
+    return `/outputs/${projectId}.${ext}`
   } catch (err) {
     console.error('Render job failed:', err)
     await prisma.project.update({

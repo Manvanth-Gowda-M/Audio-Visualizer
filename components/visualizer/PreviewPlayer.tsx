@@ -29,6 +29,15 @@ const compositions = {
   appleplayer: dynamic(() =>
     import('@/remotion/compositions/ApplePlayerVisualizer').then((m) => m.ApplePlayerVisualizer)
   ),
+  poster: dynamic(() =>
+    import('@/remotion/compositions/PosterVisualizer').then((m) => m.PosterVisualizer)
+  ),
+  dashboard: dynamic(() =>
+    import('@/remotion/compositions/DashboardVisualizer').then((m) => m.DashboardVisualizer)
+  ),
+  circular: dynamic(() =>
+    import('@/remotion/compositions/CircularPlayerVisualizer').then((m) => m.CircularPlayerVisualizer)
+  ),
 }
 
 export default function PreviewPlayer() {
@@ -69,6 +78,7 @@ export default function PreviewPlayer() {
   // Preview: cap at 60s so it loads fast. Full render uses actual duration.
   const previewDuration = Math.min(store.duration || 30, 60)
   const isApple = store.template === 'appleplayer'
+  const isPortrait = isApple || store.template === 'circular'
 
   const inputProps = isApple ? {
     audioSrc: audioSrcForVisualizer,
@@ -88,6 +98,9 @@ export default function PreviewPlayer() {
     durationInSeconds: previewDuration,
     lyricsFont: store.lyricsFont,
     effects: store.effects,
+    songTitle: store.songTitle,
+    artistName: store.artist,
+    albumName: store.labelText || 'Album',
   }
 
   return (
@@ -99,10 +112,10 @@ export default function PreviewPlayer() {
           component={Component as React.ComponentType<Record<string, unknown>>}
           inputProps={inputProps}
           durationInFrames={Math.round(previewDuration * 30)}
-          compositionWidth={isApple ? 1080 : 1920}
-          compositionHeight={isApple ? 1920 : 1080}
+          compositionWidth={isPortrait ? 1080 : 1920}
+          compositionHeight={isPortrait ? 1920 : 1080}
           fps={30}
-          style={{ width: '100%', aspectRatio: isApple ? '9/16' : '16/9' }}
+          style={{ width: '100%', aspectRatio: isPortrait ? '9/16' : '16/9' }}
           controls
           loop
           acknowledgeRemotionLicense

@@ -7,6 +7,9 @@ import { GlitchVisualizer } from './compositions/GlitchVisualizer'
 import { CassetteVisualizer } from './compositions/CassetteVisualizer'
 import { NeonPlayerVisualizer } from './compositions/NeonPlayerVisualizer'
 import { ApplePlayerVisualizer } from './compositions/ApplePlayerVisualizer'
+import { PosterVisualizer } from './compositions/PosterVisualizer'
+import { DashboardVisualizer } from './compositions/DashboardVisualizer'
+import { CircularPlayerVisualizer } from './compositions/CircularPlayerVisualizer'
 import { VisualizerProps } from './compositions/shared'
 
 const defaultProps: VisualizerProps = {
@@ -39,6 +42,9 @@ const standardCompositions = [
   { id: 'GlitchVisualizer',     component: GlitchVisualizer },
   { id: 'CassetteVisualizer',   component: CassetteVisualizer },
   { id: 'NeonPlayerVisualizer', component: NeonPlayerVisualizer },
+  { id: 'PosterVisualizer',    component: PosterVisualizer },
+  { id: 'DashboardVisualizer',      component: DashboardVisualizer },
+  { id: 'CircularPlayerVisualizer', component: CircularPlayerVisualizer },
 ]
 
 export const RemotionRoot = () => (
@@ -63,6 +69,15 @@ export const RemotionRoot = () => (
       width={1080}
       height={1920}
       defaultProps={appleDefaultProps}
+    />
+    <Composition
+      id="CircularPlayerVisualizer"
+      component={CircularPlayerVisualizer as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
     />
   </>
 )

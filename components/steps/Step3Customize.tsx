@@ -53,6 +53,25 @@ const TEMPLATE_META: Record<string, {
       { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Sia' },
     ],
   },
+  poster: { name: 'Music Poster', icon: '🎨', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title',  placeholder: 'e.g. Tale of Us' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Faithless' },
+      { key: 'labelText', label: 'Album Name',  placeholder: 'e.g. Love' },
+    ],
+  },
+  dashboard: { name: 'Dashboard', icon: '📊', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Name',   placeholder: 'e.g. Song Name' },
+      { key: 'artist',    label: 'Author Name', placeholder: 'e.g. Author Name' },
+    ],
+  },
+  circular: { name: 'Circular Player', icon: '🔴', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title',  placeholder: 'e.g. Hunny' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. French Police' },
+    ],
+  },
 }
 
 export default function Step3Customize() {

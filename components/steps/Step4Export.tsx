@@ -57,6 +57,8 @@ export default function Step4Export() {
           exportFormat:  store.exportFormat,
           exportQuality: store.exportQuality,
           exportAspect:  store.exportAspect,
+          songTitle:     store.songTitle,
+          artistName:    store.artist,
         }),
       })
       const data = await res.json()
@@ -64,10 +66,17 @@ export default function Step4Export() {
       store.setProjectId(data.projectId)
       store.setRenderStatus('processing', 0)
 
+      // Fake progress — increments faster so it doesn't look stuck
+      // Goes 0→85% over ~2 minutes, then waits for real 'done'
+      let fakeP = 0
       fakeRef.current = setInterval(() => {
-        store.setRenderStatus('processing', Math.min(store.renderProgress + 2, 90))
-      }, 3000)
+        // Accelerate early, slow down near 85%
+        const increment = fakeP < 30 ? 3 : fakeP < 60 ? 2 : fakeP < 80 ? 1 : 0.3
+        fakeP = Math.min(fakeP + increment, 85)
+        store.setRenderStatus('processing', Math.round(fakeP))
+      }, 1500)  // every 1.5s
 
+      // Poll real status every 2s
       pollingRef.current = setInterval(async () => {
         try {
           const s = await fetch(`/api/render/status?projectId=${data.projectId}`).then(r => r.json())
@@ -77,7 +86,7 @@ export default function Step4Export() {
             stop(); store.setRenderStatus('error')
           }
         } catch {}
-      }, 3000)
+      }, 2000)
     } catch {
       store.setRenderStatus('error')
     }

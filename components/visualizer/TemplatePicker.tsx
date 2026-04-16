@@ -14,6 +14,8 @@ const templates: { id: Template; name: string; desc: string }[] = [
   { id: 'cassette',   name: 'Cassette',    desc: 'Retro tape deck with VU meters' },
   { id: 'neonplayer',  name: 'Neon Player',  desc: 'Pyramid EQ bars with neon card' },
   { id: 'appleplayer', name: 'Apple Player', desc: 'iOS glassmorphism music player' },
+  { id: 'poster',      name: 'Music Poster',  desc: 'Pastel gradient with vinyl & waveforms' },
+  { id: 'dashboard',   name: 'Dashboard',     desc: 'Minimal SaaS card with smooth waveform' },
 ]
 
 function drawThumb(
