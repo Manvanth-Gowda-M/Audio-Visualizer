@@ -1,43 +1,25 @@
 import { LyricLine } from '../store'
-
-function parseLrc(lrc: string): LyricLine[] {
-  const lines: LyricLine[] = []
-  const regex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]\s*(.*)/g
-  let match
-  while ((match = regex.exec(lrc)) !== null) {
-    const minutes = parseInt(match[1])
-    const seconds = parseInt(match[2])
-    const ms = parseInt(match[3].padEnd(3, '0'))
-    const time = minutes * 60 + seconds + ms / 1000
-    const text = match[4].trim()
-    if (text) lines.push({ time, text })
-  }
-  return lines
-}
+import { parseLrc, distributeLines } from './lrcParser'
 
 export async function fetchFromLrcLib(
   title: string,
   artist: string,
-  duration?: number
+  duration = 210
 ): Promise<LyricLine[] | null> {
   try {
     const url = `https://lrclib.net/api/get?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}`
-    const res = await fetch(url)
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
     if (!res.ok) return null
     const data = await res.json()
 
     if (data.syncedLyrics) {
-      const parsed = parseLrc(data.syncedLyrics)
+      const parsed = parseLrc(data.syncedLyrics, duration)
       if (parsed.length > 0) return parsed
     }
 
     if (data.plainLyrics) {
       const lines = data.plainLyrics.split('\n').filter((l: string) => l.trim())
-      const dur = duration ?? 210
-      return lines.map((text: string, i: number) => ({
-        time: (i / lines.length) * dur,
-        text,
-      }))
+      if (lines.length > 0) return distributeLines(lines, duration)
     }
 
     return null

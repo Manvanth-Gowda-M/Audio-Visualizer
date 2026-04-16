@@ -1,10 +1,10 @@
-datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Project {
@@ -19,5 +19,12 @@ model Project {
   accentColor  String   @default("#a855f7")
   renderStatus String   @default("idle")
   outputPath   String   @default("")
+  labelText    String   @default("Now Playing")
+  themeColor   String   @default("white")
+  fontStyle    String   @default("minimal")
+  effects      String   @default("[]")
+  exportFormat  String   @default("mp4")
+  exportQuality String   @default("fullhd")
+  exportAspect  String   @default("16:9")
   createdAt    DateTime @default(now())
 }

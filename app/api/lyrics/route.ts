@@ -8,6 +8,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result)
   } catch (err) {
     console.error('Lyrics error:', err)
-    return NextResponse.json({ lyrics: [], source: 'manual' })
+    return NextResponse.json({ lyrics: [], source: 'manual', synced: false })
   }
 }
