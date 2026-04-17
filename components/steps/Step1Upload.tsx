@@ -43,6 +43,28 @@ export default function Step1Upload() {
     ctx.globalAlpha = 1
   }, [])
 
+  const getAudioDuration = useCallback((file: File) => {
+    return new Promise<number>((resolve) => {
+      const audio = document.createElement('audio')
+      const objectUrl = URL.createObjectURL(file)
+      const cleanup = () => {
+        URL.revokeObjectURL(objectUrl)
+        audio.removeAttribute('src')
+      }
+      audio.preload = 'metadata'
+      audio.onloadedmetadata = () => {
+        const duration = Number.isFinite(audio.duration) ? audio.duration : 0
+        cleanup()
+        resolve(duration > 0 ? duration : 0)
+      }
+      audio.onerror = () => {
+        cleanup()
+        resolve(0)
+      }
+      audio.src = objectUrl
+    })
+  }, [])
+
   const handleAudioFile = useCallback(async (file: File) => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase()
     if (!ACCEPTED_AUDIO.includes(ext)) { setError('Please upload an MP3, WAV, or M4A file.'); return }
@@ -51,9 +73,10 @@ export default function Step1Upload() {
     store.setAudio(file, URL.createObjectURL(file))
     // Pre-fill title from filename as fallback
     const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ')
+    const detectedDuration = await getAudioDuration(file)
+    store.setMetadata(store.songTitle || nameWithoutExt, store.artist, detectedDuration || store.duration)
     if (!store.songTitle) {
       setLocalTitle(nameWithoutExt)
-      store.setMetadata(nameWithoutExt, store.artist, store.duration)
     }
     try {
       const buf = await file.arrayBuffer()
@@ -63,7 +86,7 @@ export default function Step1Upload() {
       store.setWaveformData(waveData)
       drawWaveform(waveData)
     } catch {}
-  }, [store, drawWaveform])
+  }, [store, drawWaveform, getAudioDuration])
 
   const handleArtFile = useCallback((file: File) => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase()
@@ -154,7 +177,7 @@ export default function Step1Upload() {
               <div className="text-center">
                 <p className="text-zinc-100 font-semibold truncate max-w-[200px] text-sm">{store.audioFile.name}</p>
                 <p className="text-zinc-400 text-xs mt-0.5">
-                  {store.duration > 0 ? `${Math.floor(store.duration/60)}:${String(Math.round(store.duration%60)).padStart(2,'0')}` : 'Processing...'}
+                  {store.duration > 0 ? `${Math.floor(store.duration/60)}:${String(Math.round(store.duration%60)).padStart(2,'0')}` : 'Duration unavailable'}
                   {' · '}{(store.audioFile.size/1024/1024).toFixed(1)} MB
                 </p>
               </div>
