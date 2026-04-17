@@ -2,7 +2,7 @@ import path from 'path'
 import { mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import prisma from '../prisma'
-import { TMP_UPLOAD_ROOT } from '../media/storage'
+import { MEDIA_API_PATH_REGEX, TMP_UPLOAD_ROOT } from '../media/storage'
 
 /* ── Resolve Chrome path — use cached download, never re-download ── */
 function getChromePath(): string | undefined {
@@ -27,17 +27,19 @@ let cachedBundleLocation: string | null = null
 let bundleInProgress: Promise<string> | null = null
 
 function resolveMediaAbsolutePath(mediaPath: string): string | null {
-  const publicPrefix = '/uploads/'
-  if (mediaPath.startsWith(publicPrefix)) {
-    return path.join(process.cwd(), 'public', mediaPath.slice(1))
+  // Backward compatibility: existing projects may still reference legacy /uploads/* paths.
+  if (mediaPath.startsWith('/uploads/')) {
+    const relativePath = mediaPath.slice('/uploads/'.length)
+    const uploadsBaseDir = path.resolve(process.cwd(), 'public', 'uploads')
+    const resolvedPath = path.resolve(uploadsBaseDir, relativePath)
+    const relativeFromBase = path.relative(uploadsBaseDir, resolvedPath)
+    if (relativeFromBase.startsWith('..') || path.isAbsolute(relativeFromBase)) return null
+    return resolvedPath
   }
 
-  const mediaApiPrefix = '/api/uploads/'
-  if (mediaPath.startsWith(mediaApiPrefix)) {
-    const parts = mediaPath.split('/').filter(Boolean)
-    const kind = parts[2]
-    const filename = parts.at(-1)
-    if (!kind || !filename) return null
+  const apiMatch = mediaPath.match(MEDIA_API_PATH_REGEX)
+  if (apiMatch) {
+    const [, kind, filename] = apiMatch
     const safeFilename = path.basename(filename)
     return path.join(TMP_UPLOAD_ROOT, kind, safeFilename)
   }
@@ -107,15 +109,19 @@ export async function startRenderJob(projectId: string, durationInSeconds = 210)
 
     // Verify files exist before starting render
     const { existsSync: fileExists } = await import('fs')
-    const audioAbsPath = resolveMediaAbsolutePath(project.audioPath)
-    const artworkAbsPath = resolveMediaAbsolutePath(project.artworkPath)
+    const ensureMediaFile = (mediaPath: string, label: 'audio' | 'artwork') => {
+      const absPath = resolveMediaAbsolutePath(mediaPath)
+      if (!absPath) {
+        throw new Error(`Invalid or unsupported ${label} path format: ${mediaPath}`)
+      }
+      if (!fileExists(absPath)) {
+        throw new Error(`${label === 'audio' ? 'Audio' : 'Artwork'} file not found: ${absPath}`)
+      }
+      return absPath
+    }
 
-    if (!audioAbsPath || !fileExists(audioAbsPath)) {
-      throw new Error(`Audio file not found: ${audioAbsPath}`)
-    }
-    if (!artworkAbsPath || !fileExists(artworkAbsPath)) {
-      throw new Error(`Artwork file not found: ${artworkAbsPath}`)
-    }
+    const audioAbsPath = ensureMediaFile(project.audioPath, 'audio')
+    const artworkAbsPath = ensureMediaFile(project.artworkPath, 'artwork')
 
     console.log('[Render] Audio:', audioAbsPath)
     console.log('[Render] Artwork:', artworkAbsPath)

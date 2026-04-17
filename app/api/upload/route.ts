@@ -4,6 +4,7 @@ import path from 'path'
 import { parseBuffer } from 'music-metadata'
 import { TMP_UPLOAD_ROOT } from '@/lib/media/storage'
 
+// Node.js runtime is required because this route writes uploaded files to disk.
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
