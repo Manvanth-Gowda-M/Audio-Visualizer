@@ -7,6 +7,7 @@ out/
 
 # Build
 dist/
+tsconfig.tsbuildinfo
 
 # Env files — keep .env.local out of git
 .env.local
