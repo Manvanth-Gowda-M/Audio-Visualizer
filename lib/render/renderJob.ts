@@ -25,6 +25,24 @@ function getChromePath(): string | undefined {
 let cachedBundleLocation: string | null = null
 let bundleInProgress: Promise<string> | null = null
 
+function resolveMediaAbsolutePath(mediaPath: string): string | null {
+  if (mediaPath.startsWith('/uploads/')) {
+    return path.join(process.cwd(), 'public', mediaPath.replace(/^\/+/, ''))
+  }
+
+  const mediaApiPrefix = '/api/uploads/'
+  if (mediaPath.startsWith(mediaApiPrefix)) {
+    const parts = mediaPath.split('/').filter(Boolean)
+    const kind = parts[2]
+    const filename = parts.at(-1)
+    if (!kind || !filename) return null
+    const safeFilename = path.basename(filename)
+    return path.join('/tmp', 'audio-visualizer', 'uploads', kind, safeFilename)
+  }
+
+  return null
+}
+
 async function getBundleLocation(): Promise<string> {
   // Return cached bundle if available
   if (cachedBundleLocation) return cachedBundleLocation
@@ -87,13 +105,13 @@ export async function startRenderJob(projectId: string, durationInSeconds = 210)
 
     // Verify files exist before starting render
     const { existsSync: fileExists } = await import('fs')
-    const audioAbsPath  = path.join(process.cwd(), 'public', project.audioPath)
-    const artworkAbsPath = path.join(process.cwd(), 'public', project.artworkPath)
+    const audioAbsPath = resolveMediaAbsolutePath(project.audioPath)
+    const artworkAbsPath = resolveMediaAbsolutePath(project.artworkPath)
 
-    if (!fileExists(audioAbsPath)) {
+    if (audioAbsPath && !fileExists(audioAbsPath)) {
       throw new Error(`Audio file not found: ${audioAbsPath}`)
     }
-    if (!fileExists(artworkAbsPath)) {
+    if (artworkAbsPath && !fileExists(artworkAbsPath)) {
       throw new Error(`Artwork file not found: ${artworkAbsPath}`)
     }
 
