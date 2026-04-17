@@ -43,6 +43,28 @@ export default function Step1Upload() {
     ctx.globalAlpha = 1
   }, [])
 
+  const getAudioDuration = useCallback((file: File) => {
+    return new Promise<number | null>((resolve) => {
+      const audio = document.createElement('audio')
+      const objectUrl = URL.createObjectURL(file)
+      const cleanup = () => {
+        URL.revokeObjectURL(objectUrl)
+        audio.removeAttribute('src')
+      }
+      audio.preload = 'metadata'
+      audio.onloadedmetadata = () => {
+        const duration = audio.duration
+        cleanup()
+        resolve(Number.isFinite(duration) && duration >= 0 ? duration : null)
+      }
+      audio.onerror = () => {
+        cleanup()
+        resolve(null)
+      }
+      audio.src = objectUrl
+    })
+  }, [])
+
   const handleAudioFile = useCallback(async (file: File) => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase()
     if (!ACCEPTED_AUDIO.includes(ext)) { setError('Please upload an MP3, WAV, or M4A file.'); return }
@@ -51,10 +73,10 @@ export default function Step1Upload() {
     store.setAudio(file, URL.createObjectURL(file))
     // Pre-fill title from filename as fallback
     const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ')
-    if (!store.songTitle) {
-      setLocalTitle(nameWithoutExt)
-      store.setMetadata(nameWithoutExt, store.artist, store.duration)
-    }
+    if (!store.songTitle) setLocalTitle(nameWithoutExt)
+    const titleForMetadata = store.songTitle || nameWithoutExt
+    const detectedDuration = await getAudioDuration(file)
+    store.setMetadata(titleForMetadata, store.artist, detectedDuration ?? 0)
     try {
       const buf = await file.arrayBuffer()
       const audioCtx = new AudioContext()
@@ -63,7 +85,7 @@ export default function Step1Upload() {
       store.setWaveformData(waveData)
       drawWaveform(waveData)
     } catch {}
-  }, [store, drawWaveform])
+  }, [store, drawWaveform, getAudioDuration])
 
   const handleArtFile = useCallback((file: File) => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase()
@@ -154,7 +176,7 @@ export default function Step1Upload() {
               <div className="text-center">
                 <p className="text-zinc-100 font-semibold truncate max-w-[200px] text-sm">{store.audioFile.name}</p>
                 <p className="text-zinc-400 text-xs mt-0.5">
-                  {store.duration > 0 ? `${Math.floor(store.duration/60)}:${String(Math.round(store.duration%60)).padStart(2,'0')}` : 'Processing...'}
+                  {store.duration > 0 ? `${Math.floor(store.duration/60)}:${String(Math.round(store.duration%60)).padStart(2,'0')}` : 'Duration unavailable'}
                   {' · '}{(store.audioFile.size/1024/1024).toFixed(1)} MB
                 </p>
               </div>
