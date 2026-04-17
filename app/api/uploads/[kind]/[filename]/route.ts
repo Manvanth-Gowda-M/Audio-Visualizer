@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
 import path from 'path'
+import { TMP_UPLOAD_ROOT } from '@/lib/media/storage'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const TMP_UPLOAD_ROOT = path.join('/tmp', 'audio-visualizer', 'uploads')
 const ALLOWED_KINDS = new Set(['audio', 'artwork'])
 
 function contentTypeFor(filename: string): string {

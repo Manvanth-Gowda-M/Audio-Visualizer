@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { parseBuffer } from 'music-metadata'
+import { TMP_UPLOAD_ROOT } from '@/lib/media/storage'
 
 export const runtime = 'nodejs'
-
-const TMP_UPLOAD_ROOT = path.join('/tmp', 'audio-visualizer', 'uploads')
 
 export async function POST(req: NextRequest) {
   try {

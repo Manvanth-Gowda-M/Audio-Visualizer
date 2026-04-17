@@ -2,6 +2,7 @@ import path from 'path'
 import { mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import prisma from '../prisma'
+import { TMP_UPLOAD_ROOT } from '../media/storage'
 
 /* ── Resolve Chrome path — use cached download, never re-download ── */
 function getChromePath(): string | undefined {
@@ -26,8 +27,9 @@ let cachedBundleLocation: string | null = null
 let bundleInProgress: Promise<string> | null = null
 
 function resolveMediaAbsolutePath(mediaPath: string): string | null {
-  if (mediaPath.startsWith('/uploads/')) {
-    return path.join(process.cwd(), 'public', mediaPath.replace(/^\/+/, ''))
+  const publicPrefix = '/uploads/'
+  if (mediaPath.startsWith(publicPrefix)) {
+    return path.join(process.cwd(), 'public', mediaPath.slice(1))
   }
 
   const mediaApiPrefix = '/api/uploads/'
@@ -37,7 +39,7 @@ function resolveMediaAbsolutePath(mediaPath: string): string | null {
     const filename = parts.at(-1)
     if (!kind || !filename) return null
     const safeFilename = path.basename(filename)
-    return path.join('/tmp', 'audio-visualizer', 'uploads', kind, safeFilename)
+    return path.join(TMP_UPLOAD_ROOT, kind, safeFilename)
   }
 
   return null
@@ -108,10 +110,10 @@ export async function startRenderJob(projectId: string, durationInSeconds = 210)
     const audioAbsPath = resolveMediaAbsolutePath(project.audioPath)
     const artworkAbsPath = resolveMediaAbsolutePath(project.artworkPath)
 
-    if (audioAbsPath && !fileExists(audioAbsPath)) {
+    if (!audioAbsPath || !fileExists(audioAbsPath)) {
       throw new Error(`Audio file not found: ${audioAbsPath}`)
     }
-    if (artworkAbsPath && !fileExists(artworkAbsPath)) {
+    if (!artworkAbsPath || !fileExists(artworkAbsPath)) {
       throw new Error(`Artwork file not found: ${artworkAbsPath}`)
     }
 
