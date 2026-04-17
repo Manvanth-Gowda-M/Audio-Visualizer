@@ -289,7 +289,7 @@ export default function Step4Export() {
           <div className="w-20 h-20 rounded-3xl bg-red-500/20 flex items-center justify-center mx-auto text-4xl">❌</div>
           <div>
             <p className="text-zinc-100 text-xl font-bold mb-2">Render failed</p>
-            <p className="text-zinc-500 text-sm">Please retry once. If it still fails, check server logs.</p>
+            <p className="text-zinc-500 text-sm">Try again. If the issue persists, check server logs for the exact render error.</p>
           </div>
           <button
             onClick={() => {

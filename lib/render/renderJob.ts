@@ -25,9 +25,11 @@ function getChromePath(): string | undefined {
 /* ── Bundle cache — reuse across renders instead of re-bundling every time ── */
 let cachedBundleLocation: string | null = null
 let bundleInProgress: Promise<string> | null = null
+let ffmpegWired = false
 
 function wireStaticFfmpegBinaries() {
-  const prependToPath = (binaryPath: string | null | undefined, label: 'ffmpeg' | 'ffprobe') => {
+  if (ffmpegWired) return
+  const prependToPath = (binaryPath: string | null | undefined, toolName: 'ffmpeg' | 'ffprobe') => {
     if (!binaryPath || !existsSync(binaryPath)) return false
     const binDir = path.dirname(binaryPath)
     const pathDelimiter = process.platform === 'win32' ? ';' : ':'
@@ -36,7 +38,7 @@ function wireStaticFfmpegBinaries() {
     if (!alreadyIncluded) {
       process.env.PATH = `${binDir}${pathDelimiter}${currentPath}`
     }
-    if (label === 'ffmpeg') {
+    if (toolName === 'ffmpeg') {
       process.env.FFMPEG_PATH = binaryPath
       process.env.FFMPEG_BINARY = binaryPath
     } else {
@@ -50,18 +52,28 @@ function wireStaticFfmpegBinaries() {
   let ffprobePath: string | null | undefined
 
   try {
+    // ffmpeg-static is CommonJS-only and returns a string path.
     ffmpegPath = require('ffmpeg-static') as string | null
-  } catch {}
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.warn('[Render] Failed to load ffmpeg-static package:', message)
+  }
   try {
     ffprobePath = (require('ffprobe-static') as { path?: string }).path
-  } catch {}
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.warn('[Render] Failed to load ffprobe-static package:', message)
+  }
 
   const ffmpegReady = prependToPath(ffmpegPath, 'ffmpeg')
   const ffprobeReady = prependToPath(ffprobePath, 'ffprobe')
 
   if (ffmpegReady && ffprobeReady) {
     console.log('[Render] Using bundled ffmpeg + ffprobe binaries')
+  } else {
+    console.warn('[Render] Bundled ffmpeg/ffprobe not fully available, falling back to system PATH')
   }
+  ffmpegWired = true
 }
 
 function resolveMediaAbsolutePath(mediaPath: string): string | null {
