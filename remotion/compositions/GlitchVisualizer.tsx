@@ -1,12 +1,12 @@
 import { useCurrentFrame, useVideoConfig, Audio, Img, interpolate } from 'remotion'
-import { visualizeAudio } from '@remotion/media-utils'
+import { visualizeAudio, useAudioData, type MediaUtilsAudioData } from '@remotion/media-utils'
 import { VisualizerProps, getActiveLyric, getTypographyStyle } from './shared'
 import { EffectsLayer, EffectsWrapper } from '../effects/EffectsLayer'
 
-function safeVisualize(src: string, frame: number, fps: number, n: number): number[] {
-  if (!src) return new Array(n).fill(0)
+function safeVisualize(audioData: MediaUtilsAudioData | null, frame: number, fps: number, n: number): number[] {
+  if (!audioData) return new Array(n).fill(0)
   try {
-    return visualizeAudio({ src, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
+    return visualizeAudio({ audioData, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
   } catch {
     return new Array(n).fill(0)
   }
@@ -25,7 +25,8 @@ export const GlitchVisualizer: React.FC<VisualizerProps> = ({
   const { fps, width, height } = useVideoConfig()
   const currentTime = frame / fps
 
-  const freq = safeVisualize(audioSrc, frame, fps, 128)
+  const audioData = useAudioData(audioSrc)
+  const freq = safeVisualize(audioData, frame, fps, 128)
   const bass = freq.slice(0, 6).reduce((a, b) => a + b, 0) / 6
   const mid = freq.slice(20, 40).reduce((a, b) => a + b, 0) / 20
 

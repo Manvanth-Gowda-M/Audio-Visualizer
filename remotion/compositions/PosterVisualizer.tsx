@@ -1,12 +1,12 @@
 import { useCurrentFrame, useVideoConfig, Audio, Img, interpolate, spring } from 'remotion'
-import { visualizeAudio } from '@remotion/media-utils'
+import { visualizeAudio, useAudioData, type MediaUtilsAudioData } from '@remotion/media-utils'
 import { VisualizerProps } from './shared'
 import { EffectsLayer, EffectsWrapper } from '../effects/EffectsLayer'
 
-function safeVisualize(src: string, frame: number, fps: number, n: number): number[] {
-  if (!src) return new Array(n).fill(0)
+function safeVisualize(audioData: MediaUtilsAudioData | null, frame: number, fps: number, n: number): number[] {
+  if (!audioData) return new Array(n).fill(0)
   try {
-    return visualizeAudio({ src, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
+    return visualizeAudio({ audioData, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
   } catch {
     return new Array(n).fill(0)
   }
@@ -29,7 +29,8 @@ export const PosterVisualizer: React.FC<VisualizerProps> = ({
   const { fps, width, height } = useVideoConfig()
   const currentTime = frame / fps
 
-  const freq = safeVisualize(audioSrc, frame, fps, 128)
+  const audioData = useAudioData(audioSrc)
+  const freq = safeVisualize(audioData, frame, fps, 128)
 
   // Fade-in at start
   const fadeIn = interpolate(frame, [0, fps * 0.8], [0, 1], { extrapolateRight: 'clamp' })
