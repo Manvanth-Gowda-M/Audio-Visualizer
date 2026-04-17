@@ -53,9 +53,9 @@ export default function Step1Upload() {
       }
       audio.preload = 'metadata'
       audio.onloadedmetadata = () => {
-        const duration = Number.isFinite(audio.duration) ? audio.duration : 0
+        const duration = audio.duration
         cleanup()
-        resolve(duration >= 0 ? duration : null)
+        resolve(Number.isFinite(duration) && duration >= 0 ? duration : null)
       }
       audio.onerror = () => {
         cleanup()
@@ -76,7 +76,7 @@ export default function Step1Upload() {
     if (!store.songTitle) setLocalTitle(nameWithoutExt)
     const titleForMetadata = store.songTitle || nameWithoutExt
     const detectedDuration = await getAudioDuration(file)
-    store.setMetadata(titleForMetadata, store.artist, detectedDuration ?? store.duration)
+    store.setMetadata(titleForMetadata, store.artist, detectedDuration ?? 0)
     try {
       const buf = await file.arrayBuffer()
       const audioCtx = new AudioContext()
