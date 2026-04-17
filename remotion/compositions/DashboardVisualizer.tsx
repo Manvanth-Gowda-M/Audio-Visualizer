@@ -1,12 +1,12 @@
 import { useCurrentFrame, useVideoConfig, Audio, Img, interpolate } from 'remotion'
-import { visualizeAudio } from '@remotion/media-utils'
+import { visualizeAudio, useAudioData, type MediaUtilsAudioData } from '@remotion/media-utils'
 import { VisualizerProps } from './shared'
 import { EffectsLayer, EffectsWrapper } from '../effects/EffectsLayer'
 
-function safeVisualize(src: string, frame: number, fps: number, n: number): number[] {
-  if (!src) return new Array(n).fill(0)
+function safeVisualize(audioData: MediaUtilsAudioData | null, frame: number, fps: number, n: number): number[] {
+  if (!audioData) return new Array(n).fill(0)
   try {
-    return visualizeAudio({ src, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
+    return visualizeAudio({ audioData, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
   } catch {
     return new Array(n).fill(0)
   }
@@ -64,7 +64,8 @@ export const DashboardVisualizer: React.FC<VisualizerProps> = ({
   const currentTime = frame / fps
 
   const SAMPLES = 48
-  const rawFreq = safeVisualize(audioSrc, frame, fps, SAMPLES)
+  const audioData = useAudioData(audioSrc)
+  const rawFreq = safeVisualize(audioData, frame, fps, SAMPLES)
 
   // Smooth each frequency bin
   if (smoothedFreq.length !== SAMPLES) smoothedFreq = new Array(SAMPLES).fill(0)

@@ -1,12 +1,12 @@
 import { useCurrentFrame, useVideoConfig, Audio, Img, interpolate } from 'remotion'
-import { visualizeAudio } from '@remotion/media-utils'
+import { visualizeAudio, useAudioData, type MediaUtilsAudioData } from '@remotion/media-utils'
 import { VisualizerProps, getActiveLyric, getTypographyStyle } from './shared'
 import { EffectsLayer, EffectsWrapper } from '../effects/EffectsLayer'
 
-function safeVisualize(src: string, frame: number, fps: number, n: number): number[] {
-  if (!src) return new Array(n).fill(0)
+function safeVisualize(audioData: MediaUtilsAudioData | null, frame: number, fps: number, n: number): number[] {
+  if (!audioData) return new Array(n).fill(0)
   try {
-    return visualizeAudio({ src, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
+    return visualizeAudio({ audioData, frame, fps, numberOfSamples: n }) ?? new Array(n).fill(0)
   } catch {
     return new Array(n).fill(0)
   }
@@ -20,7 +20,8 @@ export const CircleVisualizer: React.FC<VisualizerProps> = ({
   const { fps, width, height } = useVideoConfig()
   const currentTime = frame / fps
 
-  const frequencyData = safeVisualize(audioSrc, frame, fps, 80)
+  const audioData = useAudioData(audioSrc)
+  const frequencyData = safeVisualize(audioData, frame, fps, 80)
 
   const activeLyric = getActiveLyric(lyrics, currentTime)
   const typoStyle_ = getTypographyStyle(typoStyle, accentColor, lyricsFont)

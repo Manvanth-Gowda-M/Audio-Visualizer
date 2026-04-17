@@ -53,7 +53,7 @@ export const RemotionRoot = () => (
       <Composition
         key={id}
         id={id}
-        component={C}
+        component={C as unknown as React.ComponentType<Record<string, unknown>>}
         durationInFrames={210 * 30}
         fps={30}
         width={1920}
@@ -63,7 +63,7 @@ export const RemotionRoot = () => (
     ))}
     <Composition
       id="ApplePlayerVisualizer"
-      component={ApplePlayerVisualizer as React.ComponentType<Record<string, unknown>>}
+      component={ApplePlayerVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
       durationInFrames={210 * 30}
       fps={30}
       width={1080}
@@ -72,7 +72,7 @@ export const RemotionRoot = () => (
     />
     <Composition
       id="CircularPlayerVisualizer"
-      component={CircularPlayerVisualizer as React.ComponentType<Record<string, unknown>>}
+      component={CircularPlayerVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
       durationInFrames={210 * 30}
       fps={30}
       width={1080}

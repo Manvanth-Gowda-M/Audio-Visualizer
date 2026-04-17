@@ -109,7 +109,7 @@ export default function PreviewPlayer() {
       <div key={`wrapper-${audioFilename}`}>
         <Player
           key={`${audioFilename}-${store.template}`}
-          component={Component as React.ComponentType<Record<string, unknown>>}
+          component={Component as unknown as React.ComponentType<Record<string, unknown>>}
           inputProps={inputProps}
           durationInFrames={Math.round(previewDuration * 30)}
           compositionWidth={isPortrait ? 1080 : 1920}
