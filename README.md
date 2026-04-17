@@ -20,10 +20,7 @@ npm run dev
 ## Requirements
 
 - Node.js 18+
-- FFmpeg installed: https://ffmpeg.org/download.html
-  - Windows: `winget install ffmpeg` or download from the site
-  - Mac: `brew install ffmpeg`
-  - Linux: `apt install ffmpeg`
+- FFmpeg is auto-bundled for rendering via `ffmpeg-static` (system FFmpeg is optional)
 
 ## Scripts
 

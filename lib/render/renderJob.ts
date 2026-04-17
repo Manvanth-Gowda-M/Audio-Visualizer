@@ -26,6 +26,44 @@ function getChromePath(): string | undefined {
 let cachedBundleLocation: string | null = null
 let bundleInProgress: Promise<string> | null = null
 
+function wireStaticFfmpegBinaries() {
+  const prependToPath = (binaryPath: string | null | undefined, label: 'ffmpeg' | 'ffprobe') => {
+    if (!binaryPath || !existsSync(binaryPath)) return false
+    const binDir = path.dirname(binaryPath)
+    const pathDelimiter = process.platform === 'win32' ? ';' : ':'
+    const currentPath = process.env.PATH || ''
+    const alreadyIncluded = currentPath.split(pathDelimiter).includes(binDir)
+    if (!alreadyIncluded) {
+      process.env.PATH = `${binDir}${pathDelimiter}${currentPath}`
+    }
+    if (label === 'ffmpeg') {
+      process.env.FFMPEG_PATH = binaryPath
+      process.env.FFMPEG_BINARY = binaryPath
+    } else {
+      process.env.FFPROBE_PATH = binaryPath
+      process.env.FFPROBE_BINARY = binaryPath
+    }
+    return true
+  }
+
+  let ffmpegPath: string | null | undefined
+  let ffprobePath: string | null | undefined
+
+  try {
+    ffmpegPath = require('ffmpeg-static') as string | null
+  } catch {}
+  try {
+    ffprobePath = (require('ffprobe-static') as { path?: string }).path
+  } catch {}
+
+  const ffmpegReady = prependToPath(ffmpegPath, 'ffmpeg')
+  const ffprobeReady = prependToPath(ffprobePath, 'ffprobe')
+
+  if (ffmpegReady && ffprobeReady) {
+    console.log('[Render] Using bundled ffmpeg + ffprobe binaries')
+  }
+}
+
 function resolveMediaAbsolutePath(mediaPath: string): string | null {
   // Backward compatibility: existing projects may still reference legacy /uploads/* paths.
   if (mediaPath.startsWith('/uploads/')) {
@@ -86,6 +124,7 @@ export async function startRenderJob(projectId: string, durationInSeconds = 210)
 
   try {
     const { renderMedia, selectComposition } = await import('@remotion/renderer')
+    wireStaticFfmpegBinaries()
 
     const compositionId =
       project.template === 'circle'     ? 'CircleVisualizer'
