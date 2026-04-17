@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { parseBuffer } from 'music-metadata'
+import { TMP_UPLOAD_ROOT } from '@/lib/media/storage'
+
+// Node.js runtime is required because this route writes uploaded files to disk.
+export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,8 +17,8 @@ export async function POST(req: NextRequest) {
 
     const timestamp = Date.now()
 
-    const audioDir = path.join(process.cwd(), 'public', 'uploads', 'audio')
-    const artworkDir = path.join(process.cwd(), 'public', 'uploads', 'artwork')
+    const audioDir = path.join(TMP_UPLOAD_ROOT, 'audio')
+    const artworkDir = path.join(TMP_UPLOAD_ROOT, 'artwork')
     await mkdir(audioDir, { recursive: true })
     await mkdir(artworkDir, { recursive: true })
 
@@ -31,7 +35,7 @@ export async function POST(req: NextRequest) {
       artworkFilename = `${timestamp}_${artworkFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
       const artworkSavePath = path.join(artworkDir, artworkFilename)
       await writeFile(artworkSavePath, Buffer.from(artworkBytes))
-      artworkPath = `/uploads/artwork/${artworkFilename}`
+      artworkPath = `/api/uploads/artwork/${artworkFilename}`
     }
 
     let title = audioFile.name.replace(/\.[^/.]+$/, '')
@@ -46,7 +50,7 @@ export async function POST(req: NextRequest) {
     } catch {}
 
     return NextResponse.json({
-      audioPath: `/uploads/audio/${audioFilename}`,
+      audioPath: `/api/uploads/audio/${audioFilename}`,
       artworkPath,
       title,
       artist,
