@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build
+dist/
+tsconfig.tsbuildinfo
+
+# Env files — keep .env.local out of git
+.env.local
+.env
+
+# Uploads & outputs (user files, not code)
+public/uploads/
+public/outputs/
+
+# Database
+prisma/dev.db
+prisma/dev.db-journal
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Remotion cache
+.remotion/

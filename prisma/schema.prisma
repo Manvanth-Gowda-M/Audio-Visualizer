@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  title        String   @default("Untitled")
+  artist       String   @default("")
+  audioPath    String
+  artworkPath  String
+  lyrics       String   @default("[]")
+  template     String   @default("circle")
+  typoStyle    String   @default("minimal")
+  accentColor  String   @default("#a855f7")
+  renderStatus String   @default("idle")
+  outputPath   String   @default("")
+  labelText    String   @default("Now Playing")
+  themeColor   String   @default("white")
+  fontStyle    String   @default("minimal")
+  effects      String   @default("[]")
+  exportFormat  String   @default("mp4")
+  exportQuality String   @default("fullhd")
+  exportAspect  String   @default("16:9")
+  createdAt    DateTime @default(now())
+}
