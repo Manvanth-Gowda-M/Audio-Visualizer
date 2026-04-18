@@ -270,7 +270,7 @@ export async function startRenderJob(projectId: string, durationInSeconds = 210)
       timeoutInMilliseconds: 5 * 60 * 1000,
       chromiumOptions: {
         disableWebSecurity: true,
-        chromiumArgs: ['--allow-file-access-from-files', '--disable-web-security'],
+        args: ['--allow-file-access-from-files'],
       },
       ...(chromePath ? { browserExecutable: chromePath } : {}),
       onProgress: ({ progress }) => {
