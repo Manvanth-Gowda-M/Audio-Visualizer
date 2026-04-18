@@ -51,28 +51,14 @@ export default function PreviewPlayer() {
     )
   }
 
-  // Remotion needs absolute URLs — relative paths like /uploads/... don't work
-  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  // Use blob URLs for preview — they're already in browser memory and work instantly.
+  // Server paths (store.audioPath) are only needed for the render job.
+  const audioSrcForVisualizer   = store.audioUrl ?? ''
+  const artworkSrcForVisualizer = store.artworkUrl ?? ''
 
-  // Don't show player until BOTH audio and artwork server paths are available
-  // Blob URLs crash Remotion's Img and visualizeAudio
-  if (!store.audioPath || !store.artworkPath) {
-    return (
-      <div className="flex items-center justify-center h-64 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 text-sm">
-        {!store.audioPath ? 'Upload audio in Step 1 to see preview' : 'Finishing upload...'}
-      </div>
-    )
-  }
-
-  // Use the full filename as cache buster — guarantees uniqueness per upload
-  const audioFilename = store.audioPath?.split('/').pop() ?? '0'
-  const audioSrcForVisualizer   = `${origin}${store.audioPath}?v=${encodeURIComponent(audioFilename)}`
-  const artworkFilename = store.artworkPath?.split('/').pop() ?? '0'
-  const artworkSrcForVisualizer = `${origin}${store.artworkPath}?v=${encodeURIComponent(artworkFilename)}`
-
-  console.log('[PreviewPlayer] audioSrc:', audioSrcForVisualizer)
-  console.log('[PreviewPlayer] artworkSrc:', artworkSrcForVisualizer)
-  console.log('[PreviewPlayer] key:', `${audioFilename}-${store.template}`)
+  // Use filename from path as cache buster key
+  const audioFilename   = store.audioPath?.split('/').pop() ?? store.audioFile?.name ?? '0'
+  const artworkFilename = store.artworkPath?.split('/').pop() ?? store.artworkFile?.name ?? '0'
 
   const Component = compositions[store.template]
   // Preview: cap at 60s so it loads fast. Full render uses actual duration.
