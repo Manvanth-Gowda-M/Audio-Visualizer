@@ -96,7 +96,10 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
     await import(/* webpackIgnore: true */ '@remotion/lambda/client')
 
   // Cast as string — AwsRegion is a string union; avoids another @remotion/lambda type resolution
-  const region = (process.env.REMOTION_AWS_REGION || process.env.AWS_REGION || 'us-east-1') as string
+  // Cast to `any` so TypeScript accepts it as AwsRegion without importing the type
+  // (importing AwsRegion from @remotion/lambda would break the build — it's not in deps)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const region = (process.env.REMOTION_AWS_REGION || process.env.AWS_REGION || 'us-east-1') as any
   const serveUrl = process.env.REMOTION_SERVE_URL!
   const RAM    = parseInt(process.env.REMOTION_MEMORY_MB  || '2048')
   const DISK   = parseInt(process.env.REMOTION_DISK_MB    || '10240')
