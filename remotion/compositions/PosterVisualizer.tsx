@@ -1,4 +1,5 @@
-import { useCurrentFrame, useVideoConfig, Audio, Img, interpolate, spring } from 'remotion'
+import { useCurrentFrame, useVideoConfig, Img, interpolate, spring } from 'remotion'
+import { Audio } from '@remotion/media'
 import { visualizeAudio, useAudioData, type MediaUtilsAudioData } from '@remotion/media-utils'
 import { VisualizerProps } from './shared'
 import { EffectsLayer, EffectsWrapper } from '../effects/EffectsLayer'

@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
     const project = await prisma.project.findUnique({ where: { id: projectId } })
     if (!project) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+    // outputPath may be a relative /outputs/... path (local) or a full S3 https:// URL (Lambda)
     return NextResponse.json({
       status: project.renderStatus,
       outputPath: project.outputPath,
