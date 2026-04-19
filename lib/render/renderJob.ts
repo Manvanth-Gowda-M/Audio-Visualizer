@@ -86,10 +86,15 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
   const project = await prisma.project.findUnique({ where: { id: projectId } })
   if (!project) throw new Error('Project not found')
 
+  // webpackIgnore tells both Webpack and Turbopack to skip bundling this import.
+  // @remotion/lambda/client is only needed at runtime when Lambda is configured
+  // via REMOTION_SERVE_URL. It is never called during the Vercel build.
   const { renderMediaOnLambda, getRenderProgress, speculateFunctionName } =
-    await import('@remotion/lambda/client')
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    await import(/* webpackIgnore: true */ '@remotion/lambda/client')
 
-  const region = (process.env.REMOTION_AWS_REGION || process.env.AWS_REGION || 'us-east-1') as import('@remotion/lambda').AwsRegion
+  // Cast as string — AwsRegion is a string union; avoids another @remotion/lambda type resolution
+  const region = (process.env.REMOTION_AWS_REGION || process.env.AWS_REGION || 'us-east-1') as string
   const serveUrl = process.env.REMOTION_SERVE_URL!
   const RAM    = parseInt(process.env.REMOTION_MEMORY_MB  || '2048')
   const DISK   = parseInt(process.env.REMOTION_DISK_MB    || '10240')
