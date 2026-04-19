@@ -89,8 +89,10 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
   // webpackIgnore tells both Webpack and Turbopack to skip bundling this import.
   // @remotion/lambda/client is only needed at runtime when Lambda is configured
   // via REMOTION_SERVE_URL. It is never called during the Vercel build.
+  // @ts-ignore – package intentionally absent from deps; only used at runtime via Lambda config
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   const { renderMediaOnLambda, getRenderProgress, speculateFunctionName } =
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await import(/* webpackIgnore: true */ '@remotion/lambda/client')
 
   // Cast as string — AwsRegion is a string union; avoids another @remotion/lambda type resolution
