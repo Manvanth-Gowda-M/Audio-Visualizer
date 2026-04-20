@@ -16,18 +16,17 @@ const fadeUp: Variants = {
 }
 const stagger = { show: { transition: { staggerChildren: 0.1 } } }
 
-/* ── template data ── */
 const TEMPLATES = [
-  { id: 'circle',   name: 'Circle Pulse',  tag: 'Popular',  desc: 'Frequency bars radiate from spinning album art',   accent: 'var(--accent-yellow)' },
-  { id: 'vinyl',    name: 'Vinyl Aurora',  tag: 'Classic', desc: 'Spinning record with aura glow',     accent: 'var(--accent-blue)' },
-  { id: 'waveform', name: 'Waveform',      tag: 'Clean',    desc: 'Mirrored spectrum bars with focused artwork',      accent: 'var(--accent-green)' },
-  { id: 'glitch',   name: 'Glitch Out',   tag: 'Bold',     desc: 'RGB split & CRT scanlines driven by bass',          accent: 'var(--accent-red)' },
-  { id: 'particles',name: 'Particles',    tag: 'Dynamic',  desc: 'Particle field that bursts with bass energy',       accent: 'var(--accent-purple)' },
-  { id: 'cassette',   name: 'Cassette',    tag: 'Retro',   desc: 'Tape deck with spinning reels and VU meters',        accent: 'var(--accent-yellow)' },
-  { id: 'neonplayer',  name: 'Neon Player',  tag: 'Premium', desc: 'Pyramid EQ bars, neon artwork card & progress line', accent: 'var(--accent-purple)' },
-  { id: 'appleplayer', name: 'Apple Player', tag: '✦ New',    desc: 'iOS-style music player card',  accent: 'var(--accent-blue)' },
-  { id: 'poster',      name: 'Music Poster',  tag: '✦ Premium', desc: 'Pastel gradient with vinyl, waveforms & neumorphic controls', accent: 'var(--accent-red)' },
-  { id: 'dashboard',   name: 'Dashboard',     tag: '✦ New',     desc: 'Minimal SaaS card with smooth curved waveform',               accent: 'var(--accent-green)' },
+  { id: 'circle',   name: 'Circle Pulse',  tag: 'Popular',  desc: 'Frequency bars radiate from spinning album art',   accent: '#ffcc00' },
+  { id: 'vinyl',    name: 'Vinyl Aurora',  tag: 'Classic', desc: 'Spinning record with aura glow',     accent: '#2b8aff' },
+  { id: 'waveform', name: 'Waveform',      tag: 'Clean',    desc: 'Mirrored spectrum bars with focused artwork',      accent: '#00ff66' },
+  { id: 'glitch',   name: 'Glitch Out',   tag: 'Bold',     desc: 'RGB split & CRT scanlines driven by bass',          accent: '#ff3366' },
+  { id: 'particles',name: 'Particles',    tag: 'Dynamic',  desc: 'Particle field that bursts with bass energy',       accent: '#9D4EDD' },
+  { id: 'cassette',   name: 'Cassette',    tag: 'Retro',   desc: 'Tape deck with spinning reels and VU meters',        accent: '#ffcc00' },
+  { id: 'neonplayer',  name: 'Neon Player',  tag: 'Premium', desc: 'Pyramid EQ bars, neon artwork card & progress line', accent: '#9D4EDD' },
+  { id: 'appleplayer', name: 'Apple Player', tag: '✦ New',    desc: 'iOS-style music player card',  accent: '#2b8aff' },
+  { id: 'poster',      name: 'Music Poster',  tag: '✦ Premium', desc: 'Pastel gradient with vinyl, waveforms & neumorphic controls', accent: '#ff3366' },
+  { id: 'dashboard',   name: 'Dashboard',     tag: '✦ New',     desc: 'Minimal SaaS card with smooth curved waveform',               accent: '#00ff66' },
 ]
 
 export default function HomePage() {
