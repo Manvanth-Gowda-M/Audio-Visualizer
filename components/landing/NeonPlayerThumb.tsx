@@ -17,10 +17,13 @@ export default function NeonPlayerThumb({ accent }: { accent: string }) {
       'var(--accent-green)': '#06d6a0',
       'var(--accent-purple)': '#a855f7',
     }
-    const hex = hexMap[accent] || ((accent && accent.startsWith('#') && accent.length >= 7) ? accent : '#a855f7')
-    const r = parseInt(hex.slice(1, 3), 16)
-    const g = parseInt(hex.slice(3, 5), 16)
-    const b = parseInt(hex.slice(5, 7), 16)
+    let hex = hexMap[accent] || ((accent && accent.startsWith('#') && accent.length >= 7) ? accent : '#a855f7')
+    let r = parseInt(hex.slice(1, 3), 16)
+    let g = parseInt(hex.slice(3, 5), 16)
+    let b = parseInt(hex.slice(5, 7), 16)
+    if (isNaN(r) || isNaN(g) || isNaN(b)) {
+      r = 168; g = 85; b = 247;
+    }
     let frame = 0
     let raf: number
 
