@@ -28,16 +28,13 @@ export default function Step1Upload() {
     const ctx = canvas.getContext('2d')!
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     const barW = canvas.width / data.length
-    const grad = ctx.createLinearGradient(0, 0, canvas.width, 0)
-    grad.addColorStop(0, '#a855f7')
-    grad.addColorStop(0.5, '#ec4899')
-    grad.addColorStop(1, '#a855f7')
+    ctx.fillStyle = '#000000' // Brutalist black
     data.forEach((val, i) => {
       const barH = val * canvas.height * 0.85
-      ctx.fillStyle = grad
-      ctx.globalAlpha = 0.5 + val * 0.5
+      ctx.globalAlpha = 0.8 + val * 0.2
       ctx.beginPath()
-      ctx.roundRect(i * barW, (canvas.height - barH) / 2, Math.max(barW - 1, 1), barH, 2)
+      // Sharp rectangles instead of rounded
+      ctx.rect(i * barW, (canvas.height - barH) / 2, Math.max(barW - 1, 1), barH)
       ctx.fill()
     })
     ctx.globalAlpha = 1
@@ -140,22 +137,20 @@ export default function Step1Upload() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
 
       {/* Required / Optional legend */}
-      <div className="flex items-center gap-4 text-xs">
-        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />
+      <div className="flex items-center gap-4 text-sm font-black uppercase">
+        <span className="flex items-center gap-2 px-3 py-1.5 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-[#ff2056] text-white">
           Required
         </span>
-        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 inline-block" />
+        <span className="flex items-center gap-2 px-3 py-1.5 border-2 border-dashed border-black bg-white text-black">
           Optional
         </span>
       </div>
 
       {/* Drop zones */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* Audio */}
         <div
@@ -163,31 +158,30 @@ export default function Step1Upload() {
           onDragLeave={() => setAudioDrag(false)}
           onDrop={(e) => { e.preventDefault(); setAudioDrag(false); const f = e.dataTransfer.files[0]; if (f) handleAudioFile(f) }}
           onClick={() => openPicker(ACCEPTED_AUDIO.join(','), handleAudioFile)}
-          className={`relative rounded-2xl border-2 border-dashed cursor-pointer transition-all min-h-[160px] flex flex-col items-center justify-center gap-3 p-6 overflow-hidden ${
-            audioDragging ? 'border-purple-400 bg-purple-500/10'
-            : store.audioFile ? 'border-purple-500/50 bg-purple-500/5'
-            : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600 hover:bg-zinc-800/50'
+          className={`relative border-4 border-dashed border-black cursor-pointer transition-all min-h-[180px] flex flex-col items-center justify-center gap-4 p-6 overflow-hidden ${
+            audioDragging ? 'bg-[#fbff12]'
+            : store.audioFile ? 'bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-solid translate-x-[-4px] translate-y-[-4px]'
+            : 'bg-[#fcfcfc] hover:bg-[#fbff12]'
           }`}
         >
-          <span className="absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20">Required</span>
+          <span className="absolute top-3 right-3 text-xs font-black uppercase px-2 py-1 border-2 border-black bg-[#ff2056] text-white">Required</span>
           {store.audioFile ? (
             <>
-              <div className="w-12 h-12 rounded-2xl bg-purple-600/20 flex items-center justify-center text-2xl">🎵</div>
-              <div className="text-center">
-                <p className="text-zinc-100 font-semibold truncate max-w-[200px] text-sm">{store.audioFile.name}</p>
-                <p className="text-zinc-400 text-xs mt-0.5">
+              <div className="w-14 h-14 border-4 border-black bg-[#fbff12] flex items-center justify-center text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">🎵</div>
+              <div className="text-center mt-2">
+                <p className="text-black font-black uppercase truncate max-w-[200px] text-lg">{store.audioFile.name}</p>
+                <p className="text-gray-700 font-bold text-sm mt-1">
                   {store.duration > 0 ? `${Math.floor(store.duration/60)}:${String(Math.round(store.duration%60)).padStart(2,'0')}` : 'Duration unavailable'}
                   {' · '}{(store.audioFile.size/1024/1024).toFixed(1)} MB
                 </p>
               </div>
-              <span className="text-xs text-purple-400">Click to change</span>
             </>
           ) : (
             <>
-              <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-2xl">🎵</div>
-              <div className="text-center">
-                <p className="text-zinc-300 font-medium text-sm">Drop audio here</p>
-                <p className="text-zinc-500 text-xs">MP3, WAV, M4A · max 50MB</p>
+              <div className="w-14 h-14 border-4 border-black bg-white flex items-center justify-center text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">🎵</div>
+              <div className="text-center mt-2">
+                <p className="text-black font-black uppercase text-lg">Drop audio here</p>
+                <p className="text-black font-bold text-sm mt-1">MP3, WAV, M4A · max 50MB</p>
               </div>
             </>
           )}
@@ -199,28 +193,28 @@ export default function Step1Upload() {
           onDragLeave={() => setArtDrag(false)}
           onDrop={(e) => { e.preventDefault(); setArtDrag(false); const f = e.dataTransfer.files[0]; if (f) handleArtFile(f) }}
           onClick={() => openPicker(ACCEPTED_ART.join(','), handleArtFile)}
-          className={`relative rounded-2xl border-2 border-dashed cursor-pointer transition-all min-h-[160px] flex flex-col items-center justify-center gap-3 p-6 overflow-hidden ${
-            artDragging ? 'border-pink-400 bg-pink-500/10'
-            : store.artworkFile ? 'border-pink-500/50'
-            : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600 hover:bg-zinc-800/50'
+          className={`relative border-4 border-dashed border-black cursor-pointer transition-all min-h-[180px] flex flex-col items-center justify-center gap-4 p-6 overflow-hidden ${
+            artDragging ? 'bg-[#ff2056]'
+            : store.artworkFile ? 'bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-solid translate-x-[-4px] translate-y-[-4px]'
+            : 'bg-[#fcfcfc] hover:bg-[#ff2056]'
           }`}
         >
-          <span className="absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20 z-10">Required</span>
+          <span className="absolute top-3 right-3 text-xs font-black uppercase px-2 py-1 border-2 border-black bg-[#ff2056] text-white z-10">Required</span>
           {store.artworkUrl ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={store.artworkUrl} alt="artwork" className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-40" />
+              <img src={store.artworkUrl} alt="artwork" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale" />
               <div className="relative z-10 text-center">
-                <p className="text-zinc-100 font-semibold text-sm">{store.artworkFile?.name}</p>
-                <p className="text-zinc-400 text-xs mt-0.5">Click to change</p>
+                <div className="w-14 h-14 mx-auto border-4 border-black bg-white flex items-center justify-center text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-2">🖼️</div>
+                <p className="text-black font-black uppercase text-lg truncate max-w-[200px]">{store.artworkFile?.name}</p>
               </div>
             </>
           ) : (
             <>
-              <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-2xl">🖼️</div>
-              <div className="text-center">
-                <p className="text-zinc-300 font-medium text-sm">Drop artwork here</p>
-                <p className="text-zinc-500 text-xs">JPG, PNG, WEBP · max 10MB</p>
+              <div className="w-14 h-14 border-4 border-black bg-white flex items-center justify-center text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">🖼️</div>
+              <div className="text-center mt-2">
+                <p className="text-black font-black uppercase text-lg">Drop artwork here</p>
+                <p className="text-black font-bold text-sm mt-1">JPG, PNG, WEBP · max 10MB</p>
               </div>
             </>
           )}
@@ -229,79 +223,78 @@ export default function Step1Upload() {
 
       {/* Waveform */}
       {store.waveformData.length > 0 && (
-        <div className="rounded-2xl bg-zinc-900 border border-white/5 p-4">
-          <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">Waveform</p>
-          <canvas ref={canvasRef} width={800} height={60} className="w-full rounded-lg" />
+        <div className="bg-[#06d6a0] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-5">
+          <p className="text-sm text-black font-black uppercase tracking-widest mb-3">Waveform Data</p>
+          <div className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <canvas ref={canvasRef} width={800} height={80} className="w-full" />
+          </div>
         </div>
       )}
 
       {/* ── SONG INFO — editable, used for lyrics fetch ── */}
       {store.audioFile && (
-        <div className="rounded-2xl bg-zinc-900 border border-white/5 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Song Info</p>
-            <span className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-              ✏️ Edit if wrong — used for lyrics search
+        <div className="bg-[#fbff12] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-lg text-black uppercase tracking-widest font-black">Song Info</p>
+            <span className="text-sm font-bold text-black border-2 border-black bg-white px-3 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              ✏️ Edit if wrong — used for lyrics
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="text-xs text-zinc-500 mb-1.5 block">Song Title <span className="text-red-400">*</span></label>
+              <label className="text-sm font-black text-black uppercase mb-2 block">Song Title <span className="text-[#ff2056]">*</span></label>
               <input
                 type="text"
                 value={localTitle}
                 onChange={(e) => setLocalTitle(e.target.value)}
                 placeholder="e.g. Tere Bina"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                className="w-full bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-4 py-3 text-base font-bold text-black placeholder-gray-400 focus:outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-none transition-all"
               />
             </div>
             <div>
-              <label className="text-xs text-zinc-500 mb-1.5 block">Artist Name <span className="text-red-400">*</span></label>
+              <label className="text-sm font-black text-black uppercase mb-2 block">Artist Name <span className="text-[#ff2056]">*</span></label>
               <input
                 type="text"
                 value={localArtist}
                 onChange={(e) => setLocalArtist(e.target.value)}
                 placeholder="e.g. Arijit Singh"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                className="w-full bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-4 py-3 text-base font-bold text-black placeholder-gray-400 focus:outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-none transition-all"
               />
             </div>
           </div>
-
-          <p className="text-zinc-600 text-xs">
-            💡 These are used to search lyrics automatically. Make sure they're correct.
-          </p>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-          <span>⚠️</span> {error}
+        <div className="flex items-center gap-3 p-4 bg-[#ff2056] border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-white font-black uppercase text-lg">
+          <span className="text-2xl">⚠️</span> {error}
         </div>
       )}
 
       <button
         onClick={handleUpload}
         disabled={!store.audioFile || !store.artworkFile || uploading || !localTitle.trim()}
-        className="w-full py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-base transition-all"
+        className="w-full py-4 border-4 border-black bg-[#4361ee] hover:bg-[#344bba] disabled:bg-gray-300 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0 text-white font-black text-xl uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer disabled:cursor-not-allowed"
       >
         {uploading ? (
-          <span className="flex items-center justify-center gap-2">
-            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          <span className="flex items-center justify-center gap-3">
+            <span className="w-6 h-6 border-4 border-black border-t-white rounded-full animate-spin" />
             Uploading...
           </span>
         ) : (
           <span className="flex items-center justify-center gap-2">
             Continue to Lyrics
-            <span className="text-xs opacity-60 font-normal">(optional)</span>
+            <span className="text-sm font-bold opacity-80">(optional)</span>
             →
           </span>
         )}
       </button>
 
-      <p className="text-center text-zinc-600 text-xs">
+      <p className="text-center text-black font-bold uppercase text-sm">
         Audio + Artwork are required · Lyrics are optional
       </p>
     </div>
   )
 }
+

@@ -1,71 +1,100 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600;800;900&display=swap');
 @import "tailwindcss";
 
 :root {
-  --gold:        #c9a84c;
-  --gold-light:  #e8c97a;
-  --gold-dim:    #8a6f2e;
-  --gold-glow:   rgba(201,168,76,0.15);
-  --gold-border: rgba(201,168,76,0.2);
+  /* Neo-Brutalism Palette */
+  --bg-color: #fcfcfc;
+  --text-main: #0a0a0a;
+  
+  /* Vibrant Accents */
+  --accent-yellow: #fbff12;
+  --accent-red: #ff2056;
+  --accent-blue: #4361ee;
+  --accent-green: #06d6a0;
+  --accent-purple: #a855f7;
+  
+  --border-thick: 4px;
 }
 
 * { box-sizing: border-box; }
 
 body {
-  background: #080808;
-  color: #e8e0d0;
+  background: var(--bg-color);
+  color: var(--text-main);
+  /* Use Inter for body, Space Grotesk for display */
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Gold shimmer text ── */
-@keyframes gold-shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-.gold-text {
-  background: linear-gradient(90deg,
-    #8a6f2e 0%,
-    #c9a84c 25%,
-    #f0d98a 50%,
-    #c9a84c 75%,
-    #8a6f2e 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gold-shimmer 4s linear infinite;
+/* Headings use Space Grotesk */
+h1, h2, h3, h4, h5, h6, .display-font {
+  font-family: 'Space Grotesk', sans-serif;
 }
 
-/* ── Noise grain overlay ── */
+/* ── Noise grain overlay (kept but made very subtle over bright bg) ── */
 .grain::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 999;
-  opacity: 0.025;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ── Gold border glow ── */
-.gold-border {
-  border: 1px solid var(--gold-border);
-}
-.gold-border-hover:hover {
-  border-color: rgba(201,168,76,0.5);
-  box-shadow: 0 0 24px rgba(201,168,76,0.08);
+/* ── Neo-Brutalism Utilities ── */
+
+.neo-box {
+  background: white;
+  border: var(--border-thick) solid #000;
+  box-shadow: 6px 6px 0px 0px #000;
+  transition: all 0.2s ease;
 }
 
-/* ── Glass card ── */
-.glass-card {
-  background: rgba(255,255,255,0.02);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.06);
+.neo-btn {
+  display: inline-block;
+  background: white;
+  border: var(--border-thick) solid #000;
+  box-shadow: 4px 4px 0px 0px #000;
+  transition: all 0.15s ease-out;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #000;
 }
 
-/* ── Animated bars ── */
+.neo-btn:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000;
+}
+
+.neo-btn:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px #000;
+}
+
+.neo-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.5);
+}
+
+.neo-input {
+  background: white;
+  border: var(--border-thick) solid #000;
+  box-shadow: 4px 4px 0px 0px #000;
+  transition: all 0.2s ease;
+  color: #000;
+  font-weight: 600;
+}
+
+.neo-input:focus {
+  outline: none;
+  background: #fcfcfc;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000;
+}
+
+/* ── Animated bars (Brutalist style) ── */
 @keyframes bar-up {
   0%, 100% { transform: scaleY(0.2); }
   50%       { transform: scaleY(1); }
@@ -83,15 +112,13 @@ body {
 }
 .animate-fade-in { animation: fade-in 0.25s ease-out; }
 
-/* ── Spin slow ── */
-@keyframes spin-slow {
-  to { transform: rotate(360deg); }
+/* ── Marquee for harsh decorative text ── */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
-.spin-slow { animation: spin-slow 12s linear infinite; }
-
-/* ── Pulse ring ── */
-@keyframes pulse-ring {
-  0%   { transform: scale(1);   opacity: 0.4; }
-  100% { transform: scale(1.6); opacity: 0; }
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
 }
-.pulse-ring { animation: pulse-ring 2s ease-out infinite; }

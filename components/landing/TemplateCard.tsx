@@ -46,49 +46,38 @@ export default function TemplateCard({ id, accent, name, tag, desc, onClick, sel
   return (
     <button
       onClick={onClick}
-      className="group text-left rounded-2xl overflow-hidden w-full transition-all duration-300"
-      style={{
-        background: '#0e0c0a',
-        border: selected ? `1.5px solid ${accent}` : '1px solid rgba(201,168,76,0.1)',
-        boxShadow: selected ? `0 0 28px ${accent}33` : 'none',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-6px)'
-        e.currentTarget.style.borderColor = accent + '88'
-        e.currentTarget.style.boxShadow = `0 16px 48px ${accent}22`
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.borderColor = selected ? accent : 'rgba(201,168,76,0.1)'
-        e.currentTarget.style.boxShadow = selected ? `0 0 28px ${accent}33` : 'none'
-      }}
+      className={`group text-left w-full transition-all duration-150 ${
+        selected
+          ? 'translate-x-1 translate-y-1 shadow-none border-4 border-black bg-[var(--accent-yellow)]'
+          : 'border-4 border-black shadow-[6px_6px_0px_0px_#000] bg-white hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#000]'
+      }`}
     >
-      <div className="relative overflow-hidden" style={{ height: 180 }}>
+      <div className="relative overflow-hidden border-b-4 border-black bg-black" style={{ height: 180 }}>
+        {/* Render dark thumbs effectively */}
         <ThumbRenderer id={id} accent={accent} />
-        <div
-          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          style={{ background: 'rgba(0,0,0,0.52)' }}
-        >
-          <span
-            className="px-5 py-2 rounded-full text-sm font-bold"
-            style={{ background: `linear-gradient(135deg,${accent},${accent}99)`, color: '#080808' }}
-          >
-            Use template →
+        
+        {/* Overlay hover effect */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <span className="neo-btn px-6 py-2" style={{ backgroundColor: accent, color: '#000' }}>
+            USE THIS →
           </span>
         </div>
+        
+        {/* Tag block */}
         <span
-          className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-xs font-semibold"
-          style={{ background: 'rgba(8,8,8,0.75)', border: `1px solid ${accent}44`, color: accent }}
+          className="absolute top-2 left-2 px-3 py-1 text-xs font-black uppercase text-black border-2 border-black"
+          style={{ backgroundColor: accent }}
         >
           {tag}
         </span>
       </div>
-      <div className="p-4" style={{ borderTop: '1px solid rgba(201,168,76,0.06)' }}>
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="font-semibold text-sm" style={{ color: '#e8e0d0' }}>{name}</h3>
-          <div className="w-2.5 h-2.5 rounded-full" style={{ background: accent, boxShadow: `0 0 8px ${accent}` }} />
+      
+      <div className={`p-5 ${selected ? 'bg-transparent' : 'bg-white'}`}>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-black text-xl display-font uppercase text-black">{name}</h3>
+          <div className="w-4 h-4 border-2 border-black" style={{ backgroundColor: accent }} />
         </div>
-        <p className="text-xs leading-snug" style={{ color: '#4a4030' }}>{desc}</p>
+        <p className="text-sm font-medium leading-snug text-black/80">{desc}</p>
       </div>
     </button>
   )

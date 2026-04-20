@@ -10,7 +10,14 @@ export default function NeonPlayerThumb({ accent }: { accent: string }) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     const W = canvas.width, H = canvas.height
-    const hex = (accent && accent.length >= 7) ? accent : '#a855f7'
+    const hexMap: Record<string, string> = {
+      'var(--accent-yellow)': '#fbff12',
+      'var(--accent-red)': '#ff2056',
+      'var(--accent-blue)': '#4361ee',
+      'var(--accent-green)': '#06d6a0',
+      'var(--accent-purple)': '#a855f7',
+    }
+    const hex = hexMap[accent] || ((accent && accent.startsWith('#') && accent.length >= 7) ? accent : '#a855f7')
     const r = parseInt(hex.slice(1, 3), 16)
     const g = parseInt(hex.slice(3, 5), 16)
     const b = parseInt(hex.slice(5, 7), 16)
