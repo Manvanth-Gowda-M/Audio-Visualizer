@@ -50,19 +50,19 @@ export default function HomePage() {
         transition={brutalSpring}
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-8 h-20 bg-white border-b-4 border-black"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 border-4 border-black bg-[var(--accent-yellow)] shadow-[2px_2px_0px_0px_#000] flex items-center justify-center text-xl font-black">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 border-[3px] md:border-4 border-black bg-[var(--accent-yellow)] shadow-[2px_2px_0px_0px_#000] flex items-center justify-center text-lg md:text-xl font-black">
             V
           </div>
-          <span className="text-2xl font-black tracking-tight display-font uppercase mt-1">
+          <span className="text-[1.15rem] md:text-2xl font-black tracking-tight display-font uppercase mt-1 whitespace-nowrap">
             Visualizer AI
           </span>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 md:gap-6">
           <a href="#templates" className="font-bold text-black border-b-4 border-transparent hover:border-black transition-colors hidden sm:block uppercase">
             Templates
           </a>
-          <Link href="/create" className="neo-btn px-6 py-2 bg-[var(--accent-green)]">
+          <Link href="/create" className="neo-btn px-4 py-2 md:px-6 md:py-2 text-sm md:text-base bg-[var(--accent-green)] whitespace-nowrap">
             Open Editor
           </Link>
         </div>
@@ -80,36 +80,36 @@ export default function HomePage() {
           className="relative z-10 text-center max-w-5xl mx-auto"
         >
           <motion.div variants={stagger} initial="hidden" animate="show">
-            <motion.div variants={fadeUp} className="flex justify-center mb-10">
-              <span className="neo-box px-6 py-2 text-sm font-bold uppercase bg-white flex items-center gap-3 whitespace-nowrap">
-                <span className="w-3 h-3 bg-[var(--accent-red)] border-2 border-black inline-block animate-pulse" />
-                Free · No watermark · Built for speed
+            <motion.div variants={fadeUp} className="flex justify-center mb-8 md:mb-10 w-full px-2">
+              <span className="neo-box px-3 sm:px-6 py-2 text-[11px] sm:text-sm font-bold uppercase bg-white flex items-center justify-center gap-2 sm:gap-3 text-center w-full max-w-fit">
+                <span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[var(--accent-red)] border-2 border-black inline-block animate-pulse shrink-0" />
+                <span>Free · No watermark · Built for speed</span>
               </span>
             </motion.div>
 
             <motion.h1 variants={fadeUp}
-              className="text-6xl md:text-8xl lg:text-[120px] leading-[0.9] text-black mb-8 display-font uppercase relative inline-block text-left sm:text-center w-full">
-              Turn <span className="inline-block bg-[var(--accent-yellow)] px-2 md:px-4 border-4 border-black shadow-[6px_6px_0px_0px_#000] -rotate-2 transform hover:rotate-0 transition-transform">Music</span>
+              className="text-[2.5rem] min-[375px]:text-[3rem] leading-[1.05] sm:text-6xl md:text-8xl lg:text-[120px] md:leading-[0.9] text-black mb-6 md:mb-8 display-font uppercase relative text-center w-full">
+              Turn <span className="inline-block bg-[var(--accent-yellow)] px-2 md:px-4 border-[3px] md:border-4 border-black shadow-[4px_4px_0px_0px_#000] md:shadow-[6px_6px_0px_0px_#000] -rotate-2 transform hover:rotate-0 transition-transform mt-1 sm:mt-0">Music</span>
               <br />
-              <span className="relative">
+              <span className="relative inline-block mt-1 sm:mt-0">
                 Into Cinema
                 {/* Harsh underline */}
-                <svg className="absolute w-full h-8 -bottom-4 left-0 text-black hidden sm:block" viewBox="0 0 400 20" preserveAspectRatio="none">
+                <svg className="absolute w-[110%] h-4 sm:h-8 -bottom-2 sm:-bottom-4 -left-[5%] text-black opacity-80 sm:opacity-100" viewBox="0 0 400 20" preserveAspectRatio="none">
                   <path d="M0,10 Q200,20 400,0" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="square"/>
                 </svg>
               </span>
             </motion.h1>
 
             <motion.p variants={fadeUp}
-              className="text-black font-medium text-lg md:text-2xl max-w-2xl mx-auto mb-12 leading-relaxed border-l-4 border-black pl-6 sm:border-l-0 sm:pl-0">
+              className="text-black font-medium text-sm min-[375px]:text-base sm:text-lg md:text-2xl max-w-[95%] sm:max-w-2xl mx-auto mb-10 sm:mb-12 leading-relaxed text-center opacity-90">
               Drop your audio & artwork, pick a brutally effective template, and export a 1080p video instantly in your browser.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Link href="/create" className="neo-btn px-10 py-5 bg-[var(--accent-blue)] text-xl w-full sm:w-auto text-center">
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-stretch sm:items-center w-full max-w-xs sm:max-w-none mx-auto">
+              <Link href="/create" className="neo-btn px-6 py-4 sm:px-10 sm:py-5 bg-[var(--accent-blue)] text-base md:text-xl text-center w-full sm:w-auto font-black shrink-0">
                 Start Creating 🔥
               </Link>
-              <a href="#templates" className="neo-btn px-10 py-5 bg-white text-xl w-full sm:w-auto text-center">
+              <a href="#templates" className="neo-btn px-6 py-4 sm:px-10 sm:py-5 bg-white text-base md:text-xl text-center w-full sm:w-auto font-black shrink-0">
                 View Templates
               </a>
             </motion.div>
