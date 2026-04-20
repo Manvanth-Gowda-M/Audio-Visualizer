@@ -194,10 +194,10 @@ let ffmpegWired = false
 
 function getChromePath(): string | undefined {
   const candidates = [
-    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'win64', 'chrome-headless-shell-win64', 'chrome-headless-shell.exe'),
-    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'linux64', 'chrome-headless-shell-linux64', 'chrome-headless-shell'),
-    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'mac-arm64', 'chrome-headless-shell-mac-arm64', 'chrome-headless-shell'),
-    path.join(process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'mac-x64', 'chrome-headless-shell-mac-x64', 'chrome-headless-shell'),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'win64', 'chrome-headless-shell-win64', 'chrome-headless-shell.exe'),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'linux64', 'chrome-headless-shell-linux64', 'chrome-headless-shell'),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'mac-arm64', 'chrome-headless-shell-mac-arm64', 'chrome-headless-shell'),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), 'node_modules', '.remotion', 'chrome-headless-shell', 'mac-x64', 'chrome-headless-shell-mac-x64', 'chrome-headless-shell'),
     'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     '/usr/bin/google-chrome',
@@ -231,7 +231,7 @@ function wireStaticFfmpegBinaries() {
 
 function resolveMediaAbsolutePath(mediaPath: string): string | null {
   if (mediaPath.startsWith('/uploads/')) {
-    const base = path.resolve(process.cwd(), 'public', 'uploads')
+    const base = path.resolve(/*turbopackIgnore: true*/ process.cwd(), 'public', 'uploads')
     const resolved = path.resolve(base, mediaPath.slice('/uploads/'.length))
     const rel = path.relative(base, resolved)
     if (rel.startsWith('..') || path.isAbsolute(rel)) return null
@@ -248,7 +248,7 @@ async function getBundleLocation(): Promise<string> {
   bundleInProgress = (async () => {
     console.log('[Bundle] Bundling Remotion...')
     const { bundle } = await import('@remotion/bundler')
-    const loc = await bundle({ entryPoint: path.join(process.cwd(), 'remotion', 'Root.tsx'), webpackOverride: c => c })
+    const loc = await bundle({ entryPoint: path.join(/*turbopackIgnore: true*/ process.cwd(), 'remotion', 'Root.tsx'), webpackOverride: c => c })
     console.log('[Bundle] Done:', loc)
     cachedBundleLocation = loc
     bundleInProgress = null
@@ -288,7 +288,7 @@ async function startLocalRender(projectId: string, durationInSeconds: number) {
   const bundleLocation = await getBundleLocation()
   const composition = await selectComposition({ serveUrl: bundleLocation, id: compositionId, inputProps })
 
-  const outputDir = path.join(process.cwd(), 'public', 'outputs')
+  const outputDir = path.join(/*turbopackIgnore: true*/ process.cwd(), 'public', 'outputs')
   await mkdir(outputDir, { recursive: true })
   const outputLocation = path.join(outputDir, `${projectId}.${ext}`)
   const chromePath = getChromePath()

@@ -255,8 +255,8 @@ export default function Step2Lyrics() {
               { id: 'lrc',      label: '⏱ LRC / Paste', bg: 'bg-[#fbff12]' },
               { id: 'plain',    label: '✏️ Plain Text', bg: 'bg-[#06d6a0]' },
               { id: 'timeline', label: '🎚 Timeline', bg: 'bg-[#4361ee]', textColor: 'text-white' },
-            ] as const).map(tab => (
-              <button key={tab.id} onClick={() => setMode(tab.id)}
+            ]).map(tab => (
+              <button key={tab.id} onClick={() => setMode(tab.id as 'lrc'|'plain'|'timeline')}
                 className={`px-5 py-3 font-black uppercase text-sm md:text-base border-4 border-black transition-all ${
                   mode === tab.id 
                   ? `${tab.bg} ${tab.textColor || 'text-black'} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px]` 

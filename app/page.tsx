@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic'
 const TemplateCard = dynamic(() => import('@/components/landing/TemplateCard'), { ssr: false })
 
 /* ── animation variants ── */
-const brutalSpring = { type: 'spring', stiffness: 300, damping: 25 }
+const brutalSpring = { type: 'spring' as const, stiffness: 300, damping: 25 }
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 48 },
   show:   { opacity: 1, y: 0, transition: brutalSpring },
