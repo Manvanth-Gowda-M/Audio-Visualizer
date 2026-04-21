@@ -27,6 +27,12 @@ const TEMPLATES = [
   { id: 'appleplayer', name: 'Apple Player', tag: '✦ New',    desc: 'iOS-style music player card',  accent: '#2b8aff' },
   { id: 'poster',      name: 'Music Poster',  tag: '✦ Premium', desc: 'Pastel gradient with vinyl, waveforms & neumorphic controls', accent: '#ff3366' },
   { id: 'dashboard',   name: 'Dashboard',     tag: '✦ New',     desc: 'Minimal SaaS card with smooth curved waveform',               accent: '#00ff66' },
+  { id: 'cinematic',   name: 'Cinematic Vinyl', tag: '✦ Premium', desc: 'Premium cinematic vinyl record with realistic motion', accent: '#ff8a00' },
+  { id: 'editorial',   name: 'Editorial Album', tag: '✦ Premium', desc: 'Luxurious editorial album showcase with a warm tone', accent: '#e8aa78' },
+  { id: 'symmetrical', name: 'Center Wave',     tag: '✦ Premium', desc: 'Immersive central spectrum and balanced side waveforms', accent: '#ffffff' },
+  { id: 'retro',       name: 'Retro Player',    tag: '✦ Premium', desc: 'Flat UI music player inspired by classic interfaces', accent: '#ffb6c1' },
+  { id: 'retro_cassette', name: 'Retro Cassette', tag: '✦ Premium', desc: 'Audio-driven vintage tape with mapped reel rotation', accent: '#6dd5ed' },
+  { id: 'cinematic_vinyl_ui', name: 'Cinematic Vinyl UI', tag: '✦ Premium', desc: 'High-end vinyl visualizer with premium information display', accent: '#aa1738' },
 ]
 
 export default function HomePage() {

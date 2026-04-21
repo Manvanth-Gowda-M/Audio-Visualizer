@@ -9,7 +9,14 @@ import { NeonPlayerVisualizer } from './compositions/NeonPlayerVisualizer'
 import { ApplePlayerVisualizer } from './compositions/ApplePlayerVisualizer'
 import { PosterVisualizer } from './compositions/PosterVisualizer'
 import { DashboardVisualizer } from './compositions/DashboardVisualizer'
+import { CinematicVinylVisualizer } from './compositions/CinematicVinylVisualizer'
+import { EditorialAlbumVisualizer } from './compositions/EditorialAlbumVisualizer'
 import { CircularPlayerVisualizer } from './compositions/CircularPlayerVisualizer'
+import { SymmetricalVisualizer } from './compositions/SymmetricalVisualizer'
+import { RetroPlayerVisualizer } from './compositions/RetroPlayerVisualizer'
+import { RetroCassetteVisualizer } from './compositions/RetroCassetteVisualizer'
+import { CinematicVinylUIVisualizer } from './compositions/CinematicVinylUIVisualizer'
+
 import { VisualizerProps } from './compositions/shared'
 
 const defaultProps: VisualizerProps = {
@@ -44,6 +51,10 @@ const standardCompositions = [
   { id: 'NeonPlayerVisualizer', component: NeonPlayerVisualizer },
   { id: 'PosterVisualizer',     component: PosterVisualizer },
   { id: 'DashboardVisualizer',  component: DashboardVisualizer },
+  { id: 'CinematicVinylVisualizer', component: CinematicVinylVisualizer },
+  { id: 'EditorialAlbumVisualizer', component: EditorialAlbumVisualizer },
+  { id: 'SymmetricalVisualizer', component: SymmetricalVisualizer },
+  { id: 'cinematic_vinyl_ui', component: CinematicVinylUIVisualizer },
 ]
 
 export const RemotionRoot = () => (
@@ -76,6 +87,24 @@ export const RemotionRoot = () => (
       fps={30}
       width={1080}
       height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="RetroPlayerVisualizer"
+      component={RetroPlayerVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1080}
+      defaultProps={appleDefaultProps}
+    />
+    <Composition
+      id="retro_cassette"
+      component={RetroCassetteVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1920}
+      height={1080}
       defaultProps={defaultProps}
     />
   </>

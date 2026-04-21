@@ -24,6 +24,12 @@ function templateToCompositionId(template: string): string {
     dashboard:    'DashboardVisualizer',
     circular:     'CircularPlayerVisualizer',
     appleplayer:  'ApplePlayerVisualizer',
+    cinematic:    'CinematicVinylVisualizer',
+    editorial:    'EditorialAlbumVisualizer',
+    symmetrical:  'SymmetricalVisualizer',
+    retro:        'RetroPlayerVisualizer',
+    retro_cassette: 'RetroCassetteVisualizer',
+    cinematic_vinyl_ui: 'CinematicVinylUIVisualizer',
   }
   return map[template] ?? 'CircleVisualizer'
 }
@@ -69,7 +75,7 @@ const qualityMap: Record<string, { w: number; h: number; crf: number }> = {
   '4k':   { w: 3840, h: 2160, crf: 18 },
 }
 
-function getDims(quality: string, aspect: string, isPortrait: boolean) {
+function getDims(quality: string, aspect: string, isPortrait: boolean, isSquare?: boolean) {
   const q = qualityMap[quality] ?? qualityMap.fullhd
   const aspectMap: Record<string, { w: number; h: number }> = {
     '16:9': { w: q.w, h: q.h },
@@ -77,7 +83,7 @@ function getDims(quality: string, aspect: string, isPortrait: boolean) {
     '1:1':  { w: q.h, h: q.h },
     '4:5':  { w: Math.round(q.h * 4 / 5), h: q.h },
   }
-  const effectiveAspect = isPortrait ? '9:16' : (aspect || '16:9')
+  const effectiveAspect = isSquare ? '1:1' : isPortrait ? '9:16' : (aspect || '16:9')
   return { dims: aspectMap[effectiveAspect] ?? aspectMap['16:9'], crf: q.crf }
 }
 
@@ -111,8 +117,9 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
   const functionName = speculateFunctionName({ memorySizeInMb: RAM, diskSizeInMb: DISK, timeoutInSeconds: TIMEOUT })
 
   const compositionId = templateToCompositionId(project.template)
-  const isApple   = project.template === 'appleplayer'
+  const isApple    = project.template === 'appleplayer'
   const isPortrait = isApple || project.template === 'circular'
+  const isSquare   = project.template === 'retro'
 
   // audioPath / artworkPath are now full Vercel Blob CDN URLs (https://...).
   // No need to prepend appUrl — they are already absolute. Fall back to constructing
@@ -131,7 +138,7 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
   const codecMap: Record<string, 'h264' | 'vp8' | 'gif'> = { mp4: 'h264', webm: 'vp8', gif: 'gif' }
   const codec = codecMap[project.exportFormat || 'mp4'] ?? 'h264'
   const ext   = codec === 'vp8' ? 'webm' : codec === 'gif' ? 'gif' : 'mp4'
-  const { dims } = getDims(project.exportQuality, project.exportAspect, isPortrait)
+  const { dims } = getDims(project.exportQuality, project.exportAspect, isPortrait, isSquare)
 
   console.log('[Lambda] Starting render:', compositionId, dims, codec)
 
@@ -281,6 +288,7 @@ async function startLocalRender(projectId: string, durationInSeconds: number) {
   const compositionId = templateToCompositionId(project.template)
   const isApple    = project.template === 'appleplayer'
   const isPortrait = isApple || project.template === 'circular'
+  const isSquare   = project.template === 'retro'
 
   const audioAbsPath   = resolveMediaAbsolutePath(project.audioPath)
   const artworkAbsPath = resolveMediaAbsolutePath(project.artworkPath)
@@ -293,7 +301,7 @@ async function startLocalRender(projectId: string, durationInSeconds: number) {
   const codecMap: Record<string, 'h264' | 'vp8' | 'gif'> = { mp4: 'h264', webm: 'vp8', gif: 'gif' }
   const codec = codecMap[project.exportFormat || 'mp4'] ?? 'h264'
   const ext   = codec === 'vp8' ? 'webm' : codec === 'gif' ? 'gif' : 'mp4'
-  const { dims, crf } = getDims(project.exportQuality, project.exportAspect, isPortrait)
+  const { dims, crf } = getDims(project.exportQuality, project.exportAspect, isPortrait, isSquare)
 
   const bundleLocation = await getBundleLocation()
   const composition = await selectComposition({ serveUrl: bundleLocation, id: compositionId, inputProps })

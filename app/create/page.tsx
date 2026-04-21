@@ -7,26 +7,55 @@ import Step3Customize from '@/components/steps/Step3Customize'
 import Step4Export from '@/components/steps/Step4Export'
 
 const STEPS = [
-  { n: 1, icon: '🎵', label: 'Media' },
-  { n: 2, icon: '📝', label: 'Lyrics' },
-  { n: 3, icon: '🎨', label: 'Style' },
-  { n: 4, icon: '⬇️', label: 'Export' },
+  { n: 1, icon: '🎵', label: 'Media',  sub: 'Audio + Artwork' },
+  { n: 2, icon: '📝', label: 'Lyrics', sub: 'Lyrics (optional)' },
+  { n: 3, icon: '🎨', label: 'Style',  sub: 'Style' },
+  { n: 4, icon: '⬇️', label: 'Export', sub: 'Render' },
 ]
 
 export default function CreatePage() {
   const { currentStep, setCurrentStep, songTitle, artist, template } = useStore()
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] text-black flex flex-col font-inter selection:bg-[#fbff12] selection:text-black">
-      {/* Top bar */}
-      <header className="h-16 bg-white border-b-4 border-black flex items-center px-6 gap-4 shrink-0 z-40">
-        <Link href="/" className="flex items-center gap-2 mr-4 hover:scale-105 transition-transform">
-          <div className="w-8 h-8 flex items-center justify-center text-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-2 border-black bg-[#fbff12]">🎶</div>
-          <span className="font-black uppercase tracking-tight text-xl hidden sm:block">VisualizerAI</span>
+    <div style={{
+      minHeight: '100vh',
+      background: '#0a0a0f',
+      color: '#fff',
+      display: 'flex',
+      flexDirection: 'column',
+      fontFamily: "'Inter', sans-serif",
+    }}>
+
+      {/* ── Top bar ── */}
+      <header style={{
+        height: 60,
+        background: 'rgba(255,255,255,0.03)',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 20px',
+        gap: 12,
+        flexShrink: 0,
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      }}>
+        {/* Logo */}
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginRight: 4 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 16, boxShadow: '0 0 16px rgba(168,85,247,0.4)',
+          }}>🎶</div>
+          <span style={{ fontWeight: 900, fontSize: 16, letterSpacing: '-0.02em', color: '#fff', display: 'none' }}
+            className="sm:block">VisualizerAI</span>
         </Link>
 
-        {/* Step tabs (Mobile) */}
-        <div className="flex items-center gap-2 flex-1 lg:hidden">
+        {/* Mobile step tabs */}
+        <div style={{ display: 'flex', gap: 4, flex: 1, overflowX: 'auto' }} className="lg:hidden">
           {STEPS.map((s) => {
             const done = currentStep > s.n
             const active = currentStep === s.n
@@ -35,16 +64,28 @@ export default function CreatePage() {
                 key={s.n}
                 onClick={() => done && setCurrentStep(s.n as 1|2|3|4)}
                 disabled={!done && !active}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-sm font-bold uppercase transition-all border-2 border-black ${
-                  active
-                    ? 'bg-[#fbff12] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  padding: '5px 10px',
+                  borderRadius: 8, whiteSpace: 'nowrap', flexShrink: 0,
+                  border: active
+                    ? '1px solid rgba(168,85,247,0.6)'
                     : done
-                    ? 'bg-black text-white hover:bg-gray-800 cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                    : 'bg-white text-gray-400 border-dashed cursor-default'
-                }`}
+                    ? '1px solid rgba(255,255,255,0.12)'
+                    : '1px dashed rgba(255,255,255,0.08)',
+                  background: active
+                    ? 'rgba(168,85,247,0.15)'
+                    : done
+                    ? 'rgba(255,255,255,0.05)'
+                    : 'transparent',
+                  color: active ? '#c084fc' : done ? '#a1a1aa' : '#3f3f46',
+                  fontSize: 12, fontWeight: 700,
+                  cursor: done ? 'pointer' : active ? 'default' : 'not-allowed',
+                  transition: 'all 0.2s', outline: 'none',
+                }}
               >
                 <span>{done ? '✓' : s.n}</span>
-                <span className="hidden sm:block">{s.label}</span>
+                <span style={{ display: 'none' }} className="sm:inline">{s.label}</span>
               </button>
             )
           })}
@@ -52,24 +93,56 @@ export default function CreatePage() {
 
         {/* Song info pill */}
         {songTitle && (
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-white text-sm font-bold">
-            <span className="text-black">🎵</span>
-            <span className="text-black uppercase truncate max-w-[160px]">{songTitle}</span>
-            {artist && <span className="text-gray-600">— {artist}</span>}
+          <div style={{
+            display: 'none', alignItems: 'center', gap: 8,
+            padding: '5px 14px',
+            borderRadius: 100,
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.04)',
+            fontSize: 12, fontWeight: 600,
+          }} className="md:flex">
+            <span>🎵</span>
+            <span style={{ color: '#e4e4e7', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {songTitle}
+            </span>
+            {artist && <span style={{ color: '#71717a' }}>— {artist}</span>}
           </div>
         )}
 
         {/* Template badge */}
-        <div className="px-3 py-1.5 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-[#06d6a0] text-sm font-bold text-black uppercase hidden sm:block">
+        <div style={{
+          padding: '5px 12px',
+          borderRadius: 8,
+          background: 'rgba(168,85,247,0.15)',
+          border: '1px solid rgba(168,85,247,0.3)',
+          color: '#c084fc', fontSize: 11, fontWeight: 700,
+          textTransform: 'uppercase', letterSpacing: '0.06em',
+          display: 'none', whiteSpace: 'nowrap',
+        }} className="sm:block">
           {template}
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="flex-1 flex overflow-hidden">
-        {/* Sidebar progress (desktop) */}
-        <aside className="hidden lg:flex flex-col w-64 border-r-4 border-black bg-white p-6 gap-3 shrink-0">
-          <p className="text-sm text-black font-black uppercase tracking-widest mb-4">Steps</p>
+      {/* ── Main content ── */}
+      <main style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
+        {/* Sidebar — desktop only */}
+        <aside style={{
+          width: 220,
+          flexShrink: 0,
+          borderRight: '1px solid rgba(255,255,255,0.07)',
+          background: 'rgba(255,255,255,0.02)',
+          padding: '24px 14px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+          overflowY: 'auto',
+        }} className="hidden lg:flex">
+          <p style={{
+            fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10,
+          }}>Steps</p>
+
           {STEPS.map((s) => {
             const done = currentStep > s.n
             const active = currentStep === s.n
@@ -78,56 +151,109 @@ export default function CreatePage() {
                 key={s.n}
                 onClick={() => done && setCurrentStep(s.n as 1|2|3|4)}
                 disabled={!done && !active}
-                className={`group flex items-center gap-3 p-3 text-left transition-all border-4 border-black ${
-                  active
-                    ? 'bg-[#06d6a0] text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px]'
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 12px',
+                  borderRadius: 10,
+                  border: active
+                    ? '1px solid rgba(168,85,247,0.5)'
                     : done
-                    ? 'bg-black text-white hover:bg-gray-800 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
-                    : 'bg-gray-100 text-gray-400 border-dashed cursor-default'
-                }`}
+                    ? '1px solid rgba(255,255,255,0.08)'
+                    : '1px dashed rgba(255,255,255,0.06)',
+                  background: active
+                    ? 'rgba(168,85,247,0.1)'
+                    : done
+                    ? 'rgba(255,255,255,0.03)'
+                    : 'transparent',
+                  cursor: done ? 'pointer' : active ? 'default' : 'not-allowed',
+                  textAlign: 'left', outline: 'none',
+                  transition: 'all 0.2s',
+                }}
               >
-                <span className={`w-8 h-8 flex items-center justify-center text-sm font-black border-2 border-black ${
-                  active ? 'bg-white text-black' : done ? 'bg-white text-black' : 'bg-transparent text-gray-400 border-dashed'
-                }`}>
+                <span style={{
+                  width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, fontWeight: 800,
+                  background: active
+                    ? 'linear-gradient(135deg, #a855f7, #ec4899)'
+                    : done
+                    ? 'rgba(255,255,255,0.08)'
+                    : 'rgba(255,255,255,0.03)',
+                  color: active ? '#fff' : done ? '#a1a1aa' : '#3f3f46',
+                  boxShadow: active ? '0 0 12px rgba(168,85,247,0.4)' : 'none',
+                }}>
                   {done ? '✓' : s.n}
                 </span>
                 <div>
-                  <div className="font-black uppercase text-base">{s.label}</div>
-                  <div className={`text-xs uppercase font-bold mt-1 ${active ? 'text-black' : done ? 'text-gray-300' : 'text-gray-400'}`}>
-                    {s.n === 1 && 'Audio + Artwork'}
-                    {s.n === 2 && 'Lyrics (optional)'}
-                    {s.n === 3 && 'Style'}
-                    {s.n === 4 && 'Render'}
-                  </div>
+                  <div style={{
+                    fontWeight: 700, fontSize: 12,
+                    color: active ? '#e4e4e7' : done ? '#71717a' : '#3f3f46',
+                    textTransform: 'uppercase', letterSpacing: '0.04em',
+                  }}>{s.label}</div>
+                  <div style={{
+                    fontSize: 10, marginTop: 2,
+                    color: active ? 'rgba(196,132,252,0.6)' : 'rgba(255,255,255,0.15)',
+                  }}>{s.sub}</div>
                 </div>
               </button>
             )
           })}
 
-          {/* Template mini preview */}
-          <div className="mt-auto pt-6 border-t-4 border-black">
-            <p className="text-xs font-black uppercase tracking-widest text-black mb-3">Template</p>
-            <div className="p-3 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
-              <p className="text-lg font-black text-black uppercase">{template}</p>
-              <Link href="/" className="text-sm font-bold text-[#ff2056] hover:text-black transition-colors uppercase block mt-2">
-                Change Template →
-              </Link>
+          {/* Template mini card */}
+          <div style={{ marginTop: 'auto', paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <p style={{
+              fontSize: 10, color: 'rgba(255,255,255,0.25)', fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10,
+            }}>Template</p>
+            <div style={{
+              padding: '10px 12px', borderRadius: 10,
+              border: '1px solid rgba(255,255,255,0.08)',
+              background: 'rgba(255,255,255,0.03)',
+            }}>
+              <p style={{ fontSize: 14, fontWeight: 800, color: '#e4e4e7', textTransform: 'uppercase' }}>{template}</p>
+              <Link href="/" style={{
+                fontSize: 11, fontWeight: 700, color: '#f43f5e',
+                textDecoration: 'none', display: 'block', marginTop: 6,
+                textTransform: 'uppercase', letterSpacing: '0.04em',
+              }}>Change Template →</Link>
             </div>
           </div>
         </aside>
 
-        {/* Step content */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 md:py-12">
+        {/* Step content area */}
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
+          {/* Ambient glow */}
+          <div style={{
+            position: 'fixed', top: '30%', left: '55%',
+            width: 500, height: 500, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(168,85,247,0.07) 0%, transparent 70%)',
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none', zIndex: 0,
+          }} />
+
+          <div style={{
+            maxWidth: 880,
+            margin: '0 auto',
+            padding: 'clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 60px',
+            position: 'relative', zIndex: 1,
+          }}>
             {/* Step header */}
-            <div className="mb-8 border-b-4 border-black pb-6">
-              <h1 className="text-3xl md:text-4xl font-black text-black uppercase">
+            <div style={{ marginBottom: 28, paddingBottom: 22, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+              <h1 style={{
+                fontSize: 'clamp(22px, 4vw, 34px)',
+                fontWeight: 900, color: '#fff',
+                textTransform: 'uppercase', letterSpacing: '-0.02em', margin: 0,
+                fontFamily: "'Space Grotesk', sans-serif",
+              }}>
                 {currentStep === 1 && '1. Upload Media'}
                 {currentStep === 2 && '2. Add Lyrics'}
                 {currentStep === 3 && '3. Pick Style'}
                 {currentStep === 4 && '4. Export'}
               </h1>
-              <p className="text-black font-bold uppercase mt-2 text-sm max-w-2xl">
+              <p style={{
+                color: 'rgba(255,255,255,0.3)', fontWeight: 600, fontSize: 12, marginTop: 8,
+                textTransform: 'uppercase', letterSpacing: '0.06em',
+              }}>
                 {currentStep === 1 && 'Drop your audio file and album artwork to get started'}
                 {currentStep === 2 && 'Lyrics are auto-fetched — edit, adjust timing, or skip entirely'}
                 {currentStep === 3 && 'Pick a template, accent color, and typography style'}
@@ -135,7 +261,7 @@ export default function CreatePage() {
               </p>
             </div>
 
-            {/* Animated step content */}
+            {/* Step component */}
             <div key={currentStep} className="animate-fade-in">
               {currentStep === 1 && <Step1Upload />}
               {currentStep === 2 && <Step2Lyrics />}

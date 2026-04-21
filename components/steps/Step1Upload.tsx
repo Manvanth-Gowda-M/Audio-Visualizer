@@ -22,18 +22,25 @@ export default function Step1Upload() {
   useEffect(() => { setLocalTitle(store.songTitle)  }, [store.songTitle])
   useEffect(() => { setLocalArtist(store.artist)    }, [store.artist])
 
+  // ── If already uploaded, draw saved waveform ──────────────────────────────
+  useEffect(() => {
+    if (store.isUploaded && store.waveformData.length > 0) {
+      drawWaveform(store.waveformData)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.isUploaded])
+
   const drawWaveform = useCallback((data: number[]) => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')!
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     const barW = canvas.width / data.length
-    ctx.fillStyle = '#000000' // Brutalist black
+    ctx.fillStyle = '#000000'
     data.forEach((val, i) => {
       const barH = val * canvas.height * 0.85
       ctx.globalAlpha = 0.8 + val * 0.2
       ctx.beginPath()
-      // Sharp rectangles instead of rounded
       ctx.rect(i * barW, (canvas.height - barH) / 2, Math.max(barW - 1, 1), barH)
       ctx.fill()
     })
@@ -54,10 +61,7 @@ export default function Step1Upload() {
         cleanup()
         resolve(Number.isFinite(duration) && duration >= 0 ? duration : null)
       }
-      audio.onerror = () => {
-        cleanup()
-        resolve(null)
-      }
+      audio.onerror = () => { cleanup(); resolve(null) }
       audio.src = objectUrl
     })
   }, [])
@@ -68,7 +72,6 @@ export default function Step1Upload() {
     if (file.size > 50 * 1024 * 1024) { setError('File too large. Max 50MB.'); return }
     setError('')
     store.setAudio(file, URL.createObjectURL(file))
-    // Pre-fill title from filename as fallback
     const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ')
     if (!store.songTitle) setLocalTitle(nameWithoutExt)
     const titleForMetadata = store.songTitle || nameWithoutExt
@@ -95,7 +98,6 @@ export default function Step1Upload() {
   const handleUpload = async () => {
     if (!store.audioFile) return
 
-    // Commit the user-edited title/artist to store BEFORE upload
     store.setMetadata(localTitle.trim() || 'Unknown', localArtist.trim() || 'Unknown', store.duration)
 
     setUploading(true)
@@ -111,13 +113,14 @@ export default function Step1Upload() {
       store.setAudioPath(data.audioPath)
       store.setArtworkPath(data.artworkPath)
 
-      // Only use server metadata if user hasn't typed anything custom
       const finalTitle  = localTitle.trim()  || data.title  || 'Unknown'
       const finalArtist = localArtist.trim() || data.artist || 'Unknown'
       store.setMetadata(finalTitle, finalArtist, data.duration)
       setLocalTitle(finalTitle)
       setLocalArtist(finalArtist)
 
+      // ✅ Mark as properly uploaded — prevents ghost-state UI bug
+      store.setIsUploaded(true)
       store.setCurrentStep(2)
     } catch {
       setError('Upload failed. Please try again.')
@@ -136,6 +139,57 @@ export default function Step1Upload() {
     input.click()
   }
 
+  // ── If already uploaded, show a summary + "Change files" option ───────────
+  if (store.isUploaded && store.audioPath) {
+    return (
+      <div className="space-y-6">
+        {/* Already-uploaded banner */}
+        <div className="bg-[#06d6a0] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-black font-black uppercase text-xl tracking-widest flex items-center gap-2">
+                <span>✅</span> Files Uploaded
+              </p>
+              <p className="text-black font-bold text-sm mt-1">
+                {store.songTitle} — {store.artist}
+              </p>
+              {store.duration > 0 && (
+                <p className="text-black/70 font-bold text-sm">
+                  Duration: {Math.floor(store.duration / 60)}:{String(Math.round(store.duration % 60)).padStart(2, '0')}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={() => store.clearFiles()}
+              className="px-5 py-3 border-4 border-black bg-white font-black uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+            >
+              🔄 Change Files
+            </button>
+          </div>
+        </div>
+
+        {/* Waveform */}
+        {store.waveformData.length > 0 && (
+          <div className="bg-[#fcfcfc] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-5">
+            <p className="text-sm text-black font-black uppercase tracking-widest mb-3">Waveform</p>
+            <div className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <canvas ref={canvasRef} width={800} height={80} className="w-full" />
+            </div>
+          </div>
+        )}
+
+        {/* Continue button */}
+        <button
+          onClick={() => store.setCurrentStep(2)}
+          className="w-full py-4 border-4 border-black bg-[#4361ee] hover:bg-[#344bba] text-white font-black text-xl uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+        >
+          Continue to Lyrics →
+        </button>
+      </div>
+    )
+  }
+
+  // ── Fresh upload UI ────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
 
@@ -231,7 +285,7 @@ export default function Step1Upload() {
         </div>
       )}
 
-      {/* ── SONG INFO — editable, used for lyrics fetch ── */}
+      {/* Song info */}
       {store.audioFile && (
         <div className="bg-[#fbff12] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -297,4 +351,3 @@ export default function Step1Upload() {
     </div>
   )
 }
-

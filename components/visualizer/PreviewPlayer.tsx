@@ -38,6 +38,24 @@ const compositions = {
   circular: dynamic(() =>
     import('@/remotion/compositions/CircularPlayerVisualizer').then((m) => m.CircularPlayerVisualizer)
   ),
+  cinematic: dynamic(() =>
+    import('@/remotion/compositions/CinematicVinylVisualizer').then((m) => m.CinematicVinylVisualizer)
+  ),
+  editorial: dynamic(() =>
+    import('@/remotion/compositions/EditorialAlbumVisualizer').then((m) => m.EditorialAlbumVisualizer)
+  ),
+  symmetrical: dynamic(() =>
+    import('@/remotion/compositions/SymmetricalVisualizer').then((m) => m.SymmetricalVisualizer)
+  ),
+  retro: dynamic(() =>
+    import('@/remotion/compositions/RetroPlayerVisualizer').then((m) => m.RetroPlayerVisualizer)
+  ),
+  retro_cassette: dynamic(() =>
+    import('@/remotion/compositions/RetroCassetteVisualizer').then((m) => m.RetroCassetteVisualizer)
+  ),
+  cinematic_vinyl_ui: dynamic(() =>
+    import('@/remotion/compositions/CinematicVinylUIVisualizer').then((m) => m.CinematicVinylUIVisualizer)
+  ),
 }
 
 export default function PreviewPlayer() {
@@ -65,6 +83,7 @@ export default function PreviewPlayer() {
   const previewDuration = Math.min(store.duration || 30, 60)
   const isApple = store.template === 'appleplayer'
   const isPortrait = isApple || store.template === 'circular'
+  const isSquare = store.template === 'retro'
 
   const inputProps = isApple ? {
     audioSrc: audioSrcForVisualizer,
@@ -98,10 +117,10 @@ export default function PreviewPlayer() {
           component={Component as unknown as React.ComponentType<Record<string, unknown>>}
           inputProps={inputProps}
           durationInFrames={Math.round(previewDuration * 30)}
-          compositionWidth={isPortrait ? 1080 : 1920}
-          compositionHeight={isPortrait ? 1920 : 1080}
+          compositionWidth={isSquare ? 1080 : isPortrait ? 1080 : 1920}
+          compositionHeight={isSquare ? 1080 : isPortrait ? 1920 : 1080}
           fps={30}
-          style={{ width: '100%', aspectRatio: isPortrait ? '9/16' : '16/9' }}
+          style={{ width: '100%', aspectRatio: isSquare ? '1/1' : isPortrait ? '9/16' : '16/9' }}
           controls
           loop
           acknowledgeRemotionLicense

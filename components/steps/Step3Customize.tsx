@@ -60,6 +60,24 @@ const TEMPLATE_META: Record<string, {
       { key: 'labelText', label: 'Album Name',  placeholder: 'e.g. Love' },
     ],
   },
+  cinematic: { name: 'Cinematic Vinyl', icon: '🎬', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Interstellar' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Hans Zimmer' },
+    ],
+  },
+  editorial: { name: 'Editorial Album', icon: '📝', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Lost in Translation' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Sofia Sofia' },
+    ],
+  },
+  symmetrical: { name: 'Center Wave', icon: '⚡', hasTypo: false, hasAccent: true, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. The Greatest' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Sia' },
+    ],
+  },
   dashboard: { name: 'Dashboard', icon: '📊', hasTypo: false, hasAccent: false, hasAppleFields: false,
     textFields: [
       { key: 'songTitle', label: 'Song Name',   placeholder: 'e.g. Song Name' },
@@ -70,6 +88,24 @@ const TEMPLATE_META: Record<string, {
     textFields: [
       { key: 'songTitle', label: 'Song Title',  placeholder: 'e.g. Hunny' },
       { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. French Police' },
+    ],
+  },
+  retro: { name: 'Retro Player', icon: '📻', hasTypo: false, hasAccent: true, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Vintage Track' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Retro Band' },
+    ],
+  },
+  retro_cassette: { name: 'Retro Cassette', icon: '📼', hasTypo: false, hasAccent: true, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Synthwave Night' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. The Midnight' },
+    ],
+  },
+  cinematic_vinyl_ui: { name: 'Cinematic Vinyl UI', icon: '🎬', hasTypo: true, hasAccent: true, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Dark Knight' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Hans Zimmer' },
     ],
   },
 }

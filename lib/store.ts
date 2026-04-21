@@ -13,6 +13,8 @@ export interface AppState {
   artworkFile: File | null
   artworkUrl: string | null
   artworkPath: string | null
+  /** true ONLY after a successful POST /api/upload — never when just a local File is dropped */
+  isUploaded: boolean
   songTitle: string
   artist: string
   duration: number
@@ -24,7 +26,7 @@ export interface AppState {
   lyricsSynced: boolean
   lyricsFont: string
 
-  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular'
+  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular' | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui'
   typoStyle: 'minimal' | 'bold' | 'neon'
   accentColor: string
   labelText: string
@@ -49,6 +51,9 @@ export interface AppState {
   setWaveformData: (data: number[]) => void
   setAudioPath: (path: string) => void
   setArtworkPath: (path: string) => void
+  setIsUploaded: (v: boolean) => void
+  /** Wipe all file/media state so Step1 shows fresh drop zones. Keeps template & style prefs. */
+  clearFiles: () => void
   setLyrics: (lyrics: LyricLine[], source: AppState['lyricsSource'], synced?: boolean) => void
   setLyricsLoading: (loading: boolean) => void
   setLyricsFont: (font: string) => void
@@ -76,6 +81,7 @@ const initialState = {
   artworkFile: null,
   artworkUrl: null,
   artworkPath: null,
+  isUploaded: false,
   songTitle: '',
   artist: '',
   duration: 0,
@@ -102,6 +108,28 @@ const initialState = {
   currentStep: 1 as AppState['currentStep'],
 }
 
+const fileResetState = {
+  audioFile: null,
+  audioUrl: null,
+  audioPath: null,
+  artworkFile: null,
+  artworkUrl: null,
+  artworkPath: null,
+  isUploaded: false,
+  songTitle: '',
+  artist: '',
+  duration: 0,
+  waveformData: [],
+  lyrics: [],
+  lyricsSource: null as AppState['lyricsSource'],
+  lyricsSynced: false,
+  lyricsLoading: false,
+  renderStatus: 'idle' as AppState['renderStatus'],
+  renderProgress: 0,
+  outputUrl: null as string | null,
+  currentStep: 1 as AppState['currentStep'],
+}
+
 export const useStore = create<AppState>((set) => ({
   ...initialState,
   setAudio: (file, url) => set({ audioFile: file, audioUrl: url }),
@@ -110,6 +138,8 @@ export const useStore = create<AppState>((set) => ({
   setWaveformData: (data) => set({ waveformData: data }),
   setAudioPath: (path) => set({ audioPath: path }),
   setArtworkPath: (path) => set({ artworkPath: path }),
+  setIsUploaded: (v) => set({ isUploaded: v }),
+  clearFiles: () => set(fileResetState),
   setLyrics: (lyrics, source, synced = false) => set({ lyrics, lyricsSource: source, lyricsSynced: synced }),
   setLyricsLoading: (loading) => set({ lyricsLoading: loading }),
   setLyricsFont: (font) => set({ lyricsFont: font }),

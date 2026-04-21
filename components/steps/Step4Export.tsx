@@ -67,12 +67,19 @@ export default function Step4Export() {
         poster:      () => import('@/remotion/compositions/PosterVisualizer').then(m => m.PosterVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         dashboard:   () => import('@/remotion/compositions/DashboardVisualizer').then(m => m.DashboardVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         circular:    () => import('@/remotion/compositions/CircularPlayerVisualizer').then(m => m.CircularPlayerVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        cinematic:   () => import('@/remotion/compositions/CinematicVinylVisualizer').then(m => m.CinematicVinylVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        editorial:   () => import('@/remotion/compositions/EditorialAlbumVisualizer').then(m => m.EditorialAlbumVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        symmetrical: () => import('@/remotion/compositions/SymmetricalVisualizer').then(m => m.SymmetricalVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        retro:       () => import('@/remotion/compositions/RetroPlayerVisualizer').then(m => m.RetroPlayerVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        retro_cassette: () => import('@/remotion/compositions/RetroCassetteVisualizer').then(m => m.RetroCassetteVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        cinematic_vinyl_ui: () => import('@/remotion/compositions/CinematicVinylUIVisualizer').then(m => m.CinematicVinylUIVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
       }
 
       const component = await (compositionMap[store.template] ?? compositionMap.circle)()
 
       const isApple    = store.template === 'appleplayer'
       const isPortrait = isApple || store.template === 'circular'
+      const isSquare   = store.template === 'retro'
       const q = qualityDims[store.exportQuality] ?? qualityDims.hd
 
       const aspectMap: Record<string, { w: number; h: number }> = {
@@ -80,7 +87,7 @@ export default function Step4Export() {
         '9:16': { w: q.h, h: q.w },
         '1:1':  { w: q.h, h: q.h },
       }
-      const effectiveAspect = isPortrait ? '9:16' : store.exportAspect
+      const effectiveAspect = isSquare ? '1:1' : isPortrait ? '9:16' : store.exportAspect
       const dims = aspectMap[effectiveAspect] ?? aspectMap['16:9']
 
       const durationInSeconds = store.duration || 30
@@ -167,7 +174,7 @@ export default function Step4Export() {
   /* ── CONFIG SCREEN ── */
   if (!configured && status === 'idle') {
     return (
-      <div className="max-w-2xl mx-auto space-y-6 relative">
+      <div className="max-w-2xl mx-auto space-y-5 relative px-1 sm:px-0">
       
         {/* Background ambient light */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-purple-500/5 blur-[120px] pointer-events-none rounded-full" />
@@ -249,31 +256,35 @@ export default function Step4Export() {
           </div>
         </div>
 
-        {/* Summary */}
-        <div className="relative overflow-hidden rounded-2xl bg-zinc-900/60 backdrop-blur-2xl border border-white/20 p-5 shadow-2xl ring-1 ring-white/5 flex items-center justify-between z-20">
-          <div className="flex gap-6">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Format</span>
-              <span className="text-zinc-100 font-bold text-sm">{selectedFormat.label}</span>
+        {/* Summary + Render */}
+        <div className="relative overflow-hidden rounded-2xl bg-zinc-900/60 backdrop-blur-2xl border border-white/20 p-4 sm:p-5 shadow-2xl ring-1 ring-white/5 z-20">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            {/* Settings pills */}
+            <div className="flex gap-4 sm:gap-6 flex-1">
+              <div className="flex flex-col">
+                <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Format</span>
+                <span className="text-zinc-100 font-bold text-sm">{selectedFormat.label}</span>
+              </div>
+              <div className="w-px bg-white/10 hidden sm:block" />
+              <div className="flex flex-col">
+                <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Quality</span>
+                <span className={`font-bold text-sm ${selectedQuality.color}`}>{selectedQuality.res}</span>
+              </div>
+              <div className="w-px bg-white/10 hidden sm:block" />
+              <div className="flex flex-col">
+                <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Aspect</span>
+                <span className="text-zinc-100 font-bold text-sm">{selectedAspect.label}</span>
+              </div>
             </div>
-            <div className="w-px bg-white/10" />
-            <div className="flex flex-col">
-              <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Quality</span>
-              <span className={`font-bold text-sm ${selectedQuality.color}`}>{selectedQuality.res}</span>
-            </div>
-            <div className="w-px bg-white/10" />
-            <div className="flex flex-col">
-              <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Aspect</span>
-              <span className="text-zinc-100 font-bold text-sm">{selectedAspect.label}</span>
-            </div>
+
+            {/* Render button */}
+            <button
+              onClick={() => { setConfigured(true); startRender() }}
+              className="w-full sm:w-auto py-3 px-8 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] flex items-center justify-center gap-2"
+            >
+              🎬 Render Now
+            </button>
           </div>
-          
-          <button
-            onClick={() => { setConfigured(true); startRender() }}
-            className="py-3 px-8 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transform hover:-translate-y-0.5 flex items-center gap-2"
-          >
-            🎬 Render Now
-          </button>
         </div>
       </div>
     )

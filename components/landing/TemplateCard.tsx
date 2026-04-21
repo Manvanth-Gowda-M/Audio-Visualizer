@@ -16,6 +16,7 @@ const CircularThumb    = dynamic(() => import('./thumbs/CircularThumb'),    { ss
 type TemplateId =
   | 'circle' | 'vinyl' | 'waveform' | 'glitch'
   | 'particles' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular'
+  | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui'
 
 interface Props {
   id: TemplateId
