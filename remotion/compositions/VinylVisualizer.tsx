@@ -111,13 +111,6 @@ export const VinylVisualizer: React.FC<VisualizerProps> = ({
           })}
         </g>
 
-        {/* Label circle */}
-        <circle cx={cx} cy={cy} r={labelR} fill="#111" />
-        <image href={artworkSrc} x={cx - labelR} y={cy - labelR}
-          width={labelR * 2} height={labelR * 2}
-          clipPath="url(#vinylClip)"
-          style={{ clipPath: `circle(${labelR}px at ${cx}px ${cy}px)` }}
-        />
         {/* Center hole */}
         <circle cx={cx} cy={cy} r={8} fill="#0a0a0f" />
 
@@ -129,6 +122,29 @@ export const VinylVisualizer: React.FC<VisualizerProps> = ({
           <circle cx={cx + vinylR + 80} cy={cy - vinylR - 40} r={10} fill="#555" />
         </g>
       </svg>
+
+      {/* Vinyl label artwork — uses Remotion <Img> so the renderer can fetch it correctly.
+          SVG's native <image> element bypasses Remotion's asset pipeline and can't resolve
+          blob: URLs or honour CORP headers inside the render worker. */}
+      <div style={{
+        position: 'absolute',
+        left: cx - labelR, top: cy - labelR,
+        width: labelR * 2, height: labelR * 2,
+        borderRadius: '50%',
+        overflow: 'hidden',
+        pointerEvents: 'none',
+      }}>
+        <Img src={artworkSrc} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </div>
+      {/* Center spindle hole overlay */}
+      <div style={{
+        position: 'absolute',
+        left: cx - 8, top: cy - 8,
+        width: 16, height: 16,
+        borderRadius: '50%',
+        background: '#0a0a0f',
+        pointerEvents: 'none',
+      }} />
 
       {/* Song info */}
       <div style={{

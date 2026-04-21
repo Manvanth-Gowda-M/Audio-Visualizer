@@ -56,6 +56,10 @@ export async function GET(
       headers: {
         'Content-Type': contentTypeFor(safeFilename),
         'Cache-Control': 'no-cache, max-age=0',
+        // Required: allows Remotion's render worker (running under COOP+COEP isolation)
+        // to fetch this resource cross-origin. Without this, the browser blocks the fetch.
+        'Cross-Origin-Resource-Policy': 'cross-origin',
+        'Content-Length': String(file.byteLength),
       },
     })
   } catch (err) {

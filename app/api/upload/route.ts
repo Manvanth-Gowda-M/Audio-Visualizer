@@ -1,57 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { put } from '@vercel/blob'
 import { parseBuffer } from 'music-metadata'
-import { TMP_UPLOAD_ROOT } from '@/lib/media/storage'
 
-// Node.js runtime is required because this route writes uploaded files to disk.
+// Edge runtime works here since we're no longer writing to the local filesystem.
+// Using Node.js runtime to keep music-metadata (Buffer-based) working.
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData()
-    const audioFile = formData.get('audio') as File | null
-    const artworkFile = formData.get('artwork') as File | null
+    const audioFile   = formData.get('audio')   as File | null
+    const artworkFile = formData.get('artwork')  as File | null
 
-    if (!audioFile) return NextResponse.json({ error: 'No audio file' }, { status: 400 })
+    if (!audioFile) {
+      return NextResponse.json({ error: 'No audio file' }, { status: 400 })
+    }
 
     const timestamp = Date.now()
 
-    const audioDir = path.join(TMP_UPLOAD_ROOT, 'audio')
-    const artworkDir = path.join(TMP_UPLOAD_ROOT, 'artwork')
-    await mkdir(audioDir, { recursive: true })
-    await mkdir(artworkDir, { recursive: true })
-
-    const audioBytes = await audioFile.arrayBuffer()
+    // ── Upload audio to Vercel Blob ────────────────────────────────────────────
+    // `put` streams straight to Vercel's CDN. The returned `url` is a stable
+    // HTTPS URL accessible from any serverless function instance — no /tmp race.
+    const audioBytes  = await audioFile.arrayBuffer()
     const audioBuffer = Buffer.from(audioBytes)
-    const audioFilename = `${timestamp}_${audioFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
-    const audioSavePath = path.join(audioDir, audioFilename)
-    await writeFile(audioSavePath, audioBuffer)
+    const audioFilename = `audio/${timestamp}_${audioFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
 
-    let artworkFilename = ''
-    let artworkPath = ''
+    const audioBlob = await put(audioFilename, audioBuffer, {
+      access: 'public',
+      contentType: audioFile.type || 'audio/mpeg',
+      // addRandomSuffix prevents collisions between concurrent uploads
+      addRandomSuffix: true,
+    })
+
+    // ── Upload artwork to Vercel Blob (if provided) ────────────────────────────
+    let artworkUrl = ''
     if (artworkFile) {
-      const artworkBytes = await artworkFile.arrayBuffer()
-      artworkFilename = `${timestamp}_${artworkFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
-      const artworkSavePath = path.join(artworkDir, artworkFilename)
-      await writeFile(artworkSavePath, Buffer.from(artworkBytes))
-      artworkPath = `/api/uploads/artwork/${artworkFilename}`
+      const artworkBytes    = await artworkFile.arrayBuffer()
+      const artworkFilename = `artwork/${timestamp}_${artworkFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`
+      const artworkBlob     = await put(artworkFilename, artworkBytes, {
+        access: 'public',
+        contentType: artworkFile.type || 'image/jpeg',
+        addRandomSuffix: true,
+      })
+      artworkUrl = artworkBlob.url
     }
 
-    let title = audioFile.name.replace(/\.[^/.]+$/, '')
-    let artist = 'Unknown Artist'
+    // ── Extract audio metadata ─────────────────────────────────────────────────
+    let title    = audioFile.name.replace(/\.[^/.]+$/, '')
+    let artist   = 'Unknown Artist'
     let duration = 0
 
     try {
       const metadata = await parseBuffer(audioBuffer, audioFile.type || 'audio/mpeg')
-      title = metadata.common.title || title
-      artist = metadata.common.artist || artist
+      title    = metadata.common.title   || title
+      artist   = metadata.common.artist  || artist
       duration = metadata.format.duration || 0
-    } catch {}
+    } catch { /* metadata is optional — continue without it */ }
 
     return NextResponse.json({
-      audioPath: `/api/uploads/audio/${audioFilename}`,
-      artworkPath,
+      // These are now full HTTPS Vercel Blob CDN URLs, not /api/uploads/... paths.
+      // They are accessible from any serverless container and from the Remotion
+      // render worker (which runs under COOP+COEP isolation).
+      // Vercel Blob CDN serves with CORS headers by default.
+      audioPath:   audioBlob.url,
+      artworkPath: artworkUrl,
       title,
       artist,
       duration,

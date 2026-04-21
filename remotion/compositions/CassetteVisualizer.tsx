@@ -102,13 +102,7 @@ export const CassetteVisualizer: React.FC<VisualizerProps> = ({
         <rect x={bodyX + 20} y={bodyY + 20} width={bodyW - 40} height={bodyH * 0.35}
           rx={8} fill="#1a1a2e" stroke="#333" strokeWidth={1} />
 
-        {/* Artwork in label */}
-        <image href={artworkSrc}
-          x={bodyX + 24} y={bodyY + 24}
-          width={bodyH * 0.35 - 8} height={bodyH * 0.35 - 8}
-          preserveAspectRatio="xMidYMid slice"
-          style={{ borderRadius: 4 }}
-        />
+        {/* Artwork rendered via div+Img overlay below — SVG <image> bypasses Remotion asset resolution */}
 
         {/* Tape window */}
         <rect x={cx - 160} y={reelCY - 70} width={320} height={130}
@@ -201,6 +195,22 @@ export const CassetteVisualizer: React.FC<VisualizerProps> = ({
           fill="none" stroke={accentColor}
           strokeWidth={2} opacity={bass * 0.3} />
       </svg>
+
+      {/* Cassette label artwork — positioned overlay using Remotion <Img>.
+          SVG's native <image> element cannot resolve blob: URLs or CORP-gated files
+          in the render worker, so we render this as an absolutely-positioned div instead. */}
+      <div style={{
+        position: 'absolute',
+        left: bodyX + 24,
+        top:  bodyY + 24,
+        width:  bodyH * 0.35 - 8,
+        height: bodyH * 0.35 - 8,
+        borderRadius: 4,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+      }}>
+        <Img src={artworkSrc} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </div>
 
       {/* Lyrics */}
       {activeLyric && (

@@ -114,14 +114,18 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
   const isApple   = project.template === 'appleplayer'
   const isPortrait = isApple || project.template === 'circular'
 
-  // On Lambda, media is served via the Next.js API route using the public app URL
-  // NOTE: operator precedence fix — NEXT_PUBLIC_APP_URL takes priority, then VERCEL_URL, then localhost
+  // audioPath / artworkPath are now full Vercel Blob CDN URLs (https://...).
+  // No need to prepend appUrl — they are already absolute. Fall back to constructing
+  // an absolute URL from the /api/uploads/ path for backward-compat with any old projects.
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
-  const audioSrc   = `${appUrl}${project.audioPath}`
-  const artworkSrc = `${appUrl}${project.artworkPath}`
+  const toAbsolute = (p: string) =>
+    p.startsWith('http://') || p.startsWith('https://') ? p : `${appUrl}${p}`
+
+  const audioSrc   = toAbsolute(project.audioPath)
+  const artworkSrc = toAbsolute(project.artworkPath)
   const inputProps = buildInputProps(project, durationInSeconds, audioSrc, artworkSrc)
 
   const codecMap: Record<string, 'h264' | 'vp8' | 'gif'> = { mp4: 'h264', webm: 'vp8', gif: 'gif' }
@@ -230,6 +234,11 @@ function wireStaticFfmpegBinaries() {
 }
 
 function resolveMediaAbsolutePath(mediaPath: string): string | null {
+  // If it's already a full HTTPS URL (Vercel Blob CDN), pass it through — the local
+  // renderer will fetch it over the network just like the Lambda renderer does.
+  if (mediaPath.startsWith('http://') || mediaPath.startsWith('https://')) {
+    return mediaPath
+  }
   if (mediaPath.startsWith('/uploads/')) {
     const base = path.resolve(/*turbopackIgnore: true*/ process.cwd(), 'public', 'uploads')
     const resolved = path.resolve(base, mediaPath.slice('/uploads/'.length))
@@ -237,6 +246,7 @@ function resolveMediaAbsolutePath(mediaPath: string): string | null {
     if (rel.startsWith('..') || path.isAbsolute(rel)) return null
     return resolved
   }
+  // Legacy: /api/uploads/kind/filename → /tmp path (dev-only fallback)
   const m = mediaPath.match(MEDIA_API_PATH_REGEX)
   if (m) return path.join(TMP_UPLOAD_ROOT, m[1], path.basename(m[2]))
   return null

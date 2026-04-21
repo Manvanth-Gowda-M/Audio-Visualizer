@@ -1,11 +1,11 @@
 import {
   useCurrentFrame,
   useVideoConfig,
-  Audio,
   Img,
   interpolate,
   spring,
 } from 'remotion'
+import { Audio } from '@remotion/media'
 import { VisualizerProps } from './shared'
 
 /* ── font presets ── */

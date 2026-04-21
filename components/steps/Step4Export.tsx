@@ -86,13 +86,13 @@ export default function Step4Export() {
       const durationInSeconds = store.duration || 30
       const fps = 30
 
-      // Use blob URLs — the audio/artwork are already in browser memory from the upload step.
-      // These work fine in the Remotion render worker once COOP/COEP headers are set
-      // (SharedArrayBuffer enabled), since blob: URLs are same-origin and need no CORP header.
-      // Avoid using /api/uploads paths on Vercel: the /tmp filesystem is ephemeral
-      // and may 404 on a different serverless function instance.
-      const audioSrc   = store.audioUrl   ?? ''
-      const artworkSrc = store.artworkUrl ?? ''
+      // store.audioPath / store.artworkPath are now full Vercel Blob CDN URLs
+      // (https://xxxx.public.blob.vercel-storage.com/...). They are served from
+      // Vercel's CDN with CORS headers, so the render worker can fetch them even
+      // under COOP+COEP cross-origin isolation. Multiple parallel users are safe —
+      // each upload goes to its own unique CDN URL, no /tmp race conditions.
+      const audioSrc   = store.audioPath   ?? store.audioUrl   ?? ''
+      const artworkSrc = store.artworkPath ?? store.artworkUrl ?? ''
 
       const inputProps = isApple ? {
         audioSrc,
