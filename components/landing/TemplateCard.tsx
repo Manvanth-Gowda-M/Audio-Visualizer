@@ -1,17 +1,23 @@
 'use client'
 import dynamic from 'next/dynamic'
 
-const CircleThumb      = dynamic(() => import('./thumbs/CircleThumb'),      { ssr: false })
-const VinylThumb       = dynamic(() => import('./thumbs/VinylThumb'),       { ssr: false })
-const WaveformThumb    = dynamic(() => import('./thumbs/WaveformThumb'),    { ssr: false })
-const GlitchThumb      = dynamic(() => import('./thumbs/GlitchThumb'),      { ssr: false })
-const ParticlesThumb   = dynamic(() => import('./thumbs/ParticlesThumb'),   { ssr: false })
-const CassetteThumb    = dynamic(() => import('./thumbs/CassetteThumb'),    { ssr: false })
-const NeonPlayerThumb  = dynamic(() => import('./NeonPlayerThumb'),         { ssr: false })
-const ApplePlayerThumb = dynamic(() => import('./thumbs/ApplePlayerThumb'), { ssr: false })
-const PosterThumb      = dynamic(() => import('./thumbs/PosterThumb'),      { ssr: false })
-const DashboardThumb   = dynamic(() => import('./thumbs/DashboardThumb'),   { ssr: false })
-const CircularThumb    = dynamic(() => import('./thumbs/CircularThumb'),    { ssr: false })
+const CircleThumb         = dynamic(() => import('./thumbs/CircleThumb'),           { ssr: false })
+const VinylThumb          = dynamic(() => import('./thumbs/VinylThumb'),            { ssr: false })
+const WaveformThumb       = dynamic(() => import('./thumbs/WaveformThumb'),         { ssr: false })
+const GlitchThumb         = dynamic(() => import('./thumbs/GlitchThumb'),           { ssr: false })
+const ParticlesThumb      = dynamic(() => import('./thumbs/ParticlesThumb'),        { ssr: false })
+const CassetteThumb       = dynamic(() => import('./thumbs/CassetteThumb'),         { ssr: false })
+const NeonPlayerThumb     = dynamic(() => import('./NeonPlayerThumb'),              { ssr: false })
+const ApplePlayerThumb    = dynamic(() => import('./thumbs/ApplePlayerThumb'),      { ssr: false })
+const PosterThumb         = dynamic(() => import('./thumbs/PosterThumb'),           { ssr: false })
+const DashboardThumb      = dynamic(() => import('./thumbs/DashboardThumb'),        { ssr: false })
+const CircularThumb       = dynamic(() => import('./thumbs/CircularThumb'),         { ssr: false })
+const CinematicThumb      = dynamic(() => import('./thumbs/CinematicThumb'),        { ssr: false })
+const EditorialThumb      = dynamic(() => import('./thumbs/EditorialThumb'),        { ssr: false })
+const SymmetricalThumb    = dynamic(() => import('./thumbs/SymmetricalThumb'),      { ssr: false })
+const RetroThumb          = dynamic(() => import('./thumbs/RetroThumb'),            { ssr: false })
+const RetroCassetteThumb  = dynamic(() => import('./thumbs/RetroCassetteThumb'),   { ssr: false })
+const CinematicVinylUIThumb = dynamic(() => import('./thumbs/CinematicVinylUIThumb'), { ssr: false })
 
 type TemplateId =
   | 'circle' | 'vinyl' | 'waveform' | 'glitch'
@@ -29,17 +35,23 @@ interface Props {
 }
 
 function ThumbRenderer({ id, accent }: { id: TemplateId; accent: string }) {
-  if (id === 'circle')      return <CircleThumb />
-  if (id === 'vinyl')       return <VinylThumb />
-  if (id === 'waveform')    return <WaveformThumb />
-  if (id === 'glitch')      return <GlitchThumb />
-  if (id === 'particles')   return <ParticlesThumb />
-  if (id === 'cassette')    return <CassetteThumb />
-  if (id === 'neonplayer')  return <NeonPlayerThumb accent={accent} />
-  if (id === 'appleplayer') return <ApplePlayerThumb />
-  if (id === 'poster')      return <PosterThumb />
-  if (id === 'dashboard')   return <DashboardThumb />
-  if (id === 'circular')    return <CircularThumb />
+  if (id === 'circle')           return <CircleThumb />
+  if (id === 'vinyl')            return <VinylThumb />
+  if (id === 'waveform')         return <WaveformThumb />
+  if (id === 'glitch')           return <GlitchThumb />
+  if (id === 'particles')        return <ParticlesThumb />
+  if (id === 'cassette')         return <CassetteThumb />
+  if (id === 'neonplayer')       return <NeonPlayerThumb accent={accent} />
+  if (id === 'appleplayer')      return <ApplePlayerThumb />
+  if (id === 'poster')           return <PosterThumb />
+  if (id === 'dashboard')        return <DashboardThumb />
+  if (id === 'circular')         return <CircularThumb />
+  if (id === 'cinematic')        return <CinematicThumb />
+  if (id === 'editorial')        return <EditorialThumb />
+  if (id === 'symmetrical')      return <SymmetricalThumb />
+  if (id === 'retro')            return <RetroThumb />
+  if (id === 'retro_cassette')   return <RetroCassetteThumb />
+  if (id === 'cinematic_vinyl_ui') return <CinematicVinylUIThumb />
   return null
 }
 
