@@ -20,10 +20,10 @@ const ASPECTS = [
   { id: '1:1',  label: '1:1',  icon: '⬜',  desc: 'Square · Instagram Feed' },
 ] as const
 
-const qualityDims: Record<string, { w: number; h: number }> = {
-  draft:  { w: 854,  h: 480  },
-  hd:     { w: 1280, h: 720  },
-  fullhd: { w: 1920, h: 1080 },
+const qualityDims: Record<string, { w: number; h: number; fps: number; jpegQ: number; scale: number }> = {
+  draft:  { w: 854,  h: 480,  fps: 24, jpegQ: 40, scale: 0.5  },
+  hd:     { w: 1280, h: 720,  fps: 24, jpegQ: 60, scale: 0.75 },
+  fullhd: { w: 1920, h: 1080, fps: 30, jpegQ: 75, scale: 1    },
 }
 
 export default function Step4Export() {
@@ -80,7 +80,10 @@ export default function Step4Export() {
       const isApple    = store.template === 'appleplayer'
       const isPortrait = isApple || store.template === 'circular'
       const isSquare   = store.template === 'retro'
-      const q = qualityDims[store.exportQuality] ?? qualityDims.hd
+      const q          = qualityDims[store.exportQuality] ?? qualityDims.hd
+      const fps        = q.fps
+      const jpegQ      = q.jpegQ
+      const renderScale = q.scale
 
       const aspectMap: Record<string, { w: number; h: number }> = {
         '16:9': { w: q.w, h: q.h },
@@ -91,7 +94,6 @@ export default function Step4Export() {
       const dims = aspectMap[effectiveAspect] ?? aspectMap['16:9']
 
       const durationInSeconds = store.duration || 30
-      const fps = 30
 
       // store.audioPath / store.artworkPath are now full Vercel Blob CDN URLs
       // (https://xxxx.public.blob.vercel-storage.com/...). They are served from
@@ -139,6 +141,7 @@ export default function Step4Export() {
         },
         inputProps,
         container,
+        scale: renderScale,
         onProgress: ({ progress: p }) => {
           const pct = Math.round(p * 100)
           setProgress(pct)

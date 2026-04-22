@@ -68,11 +68,11 @@ function buildInputProps(project: {
   }
 }
 
-const qualityMap: Record<string, { w: number; h: number; crf: number }> = {
-  draft:  { w: 854,  h: 480,  crf: 32 },
-  hd:     { w: 1280, h: 720,  crf: 26 },
-  fullhd: { w: 1920, h: 1080, crf: 22 },
-  '4k':   { w: 3840, h: 2160, crf: 18 },
+const qualityMap: Record<string, { w: number; h: number; crf: number; preset: string; jpegQ: number }> = {
+  draft:  { w: 854,  h: 480,  crf: 36, preset: 'ultrafast', jpegQ: 40 },
+  hd:     { w: 1280, h: 720,  crf: 28, preset: 'superfast', jpegQ: 60 },
+  fullhd: { w: 1920, h: 1080, crf: 24, preset: 'veryfast',  jpegQ: 75 },
+  '4k':   { w: 3840, h: 2160, crf: 20, preset: 'fast',      jpegQ: 85 },
 }
 
 function getDims(quality: string, aspect: string, isPortrait: boolean, isSquare?: boolean) {
@@ -84,7 +84,7 @@ function getDims(quality: string, aspect: string, isPortrait: boolean, isSquare?
     '4:5':  { w: Math.round(q.h * 4 / 5), h: q.h },
   }
   const effectiveAspect = isSquare ? '1:1' : isPortrait ? '9:16' : (aspect || '16:9')
-  return { dims: aspectMap[effectiveAspect] ?? aspectMap['16:9'], crf: q.crf }
+  return { dims: aspectMap[effectiveAspect] ?? aspectMap['16:9'], crf: q.crf, preset: q.preset, jpegQ: q.jpegQ }
 }
 
 /* ─────────────────────────────────────────────
@@ -151,8 +151,9 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
     inputProps,
     codec,
     imageFormat: 'jpeg',
+    jpegQuality: getDims(project.exportQuality, project.exportAspect, isPortrait, isSquare).jpegQ,
     maxRetries: 1,
-    framesPerLambda: 20,
+    framesPerLambda: 60,
     privacy: 'public',
     outName: `${projectId}.${ext}`,
     downloadBehavior: { type: 'download', fileName: `video.${ext}` },
@@ -160,7 +161,7 @@ async function startLambdaRender(projectId: string, durationInSeconds: number) {
     height: dims.h,
     durationInFrames: Math.ceil(durationInSeconds * 30),
     fps: 30,
-    chromiumOptions: { disableWebSecurity: true },
+    chromiumOptions: { disableWebSecurity: true, gl: 'angle' },
   })
 
   console.log('[Lambda] Render started, renderId:', renderId)
@@ -301,7 +302,7 @@ async function startLocalRender(projectId: string, durationInSeconds: number) {
   const codecMap: Record<string, 'h264' | 'vp8' | 'gif'> = { mp4: 'h264', webm: 'vp8', gif: 'gif' }
   const codec = codecMap[project.exportFormat || 'mp4'] ?? 'h264'
   const ext   = codec === 'vp8' ? 'webm' : codec === 'gif' ? 'gif' : 'mp4'
-  const { dims, crf } = getDims(project.exportQuality, project.exportAspect, isPortrait, isSquare)
+  const { dims, crf, preset, jpegQ } = getDims(project.exportQuality, project.exportAspect, isPortrait, isSquare)
 
   const bundleLocation = await getBundleLocation()
   const composition = await selectComposition({ serveUrl: bundleLocation, id: compositionId, inputProps })
@@ -311,7 +312,15 @@ async function startLocalRender(projectId: string, durationInSeconds: number) {
   const outputLocation = path.join(outputDir, `${projectId}.${ext}`)
   const chromePath = getChromePath()
 
-  console.log('[Render] Local render:', compositionId, dims, codec)
+  // Use ALL available cores — Remotion spawns separate browser tabs per frame chunk
+  const cpuCount = require('os').cpus().length
+  const concurrency = Math.max(2, cpuCount)
+
+  // Timeout scaled by quality: draft = 3 min, hd = 5 min, fullhd = 8 min, 4k = 15 min
+  const timeoutMap: Record<string, number> = { draft: 3, hd: 5, fullhd: 8, '4k': 15 }
+  const timeoutMin = timeoutMap[project.exportQuality] ?? 8
+
+  console.log(`[Render] Local render: ${compositionId} ${dims.w}x${dims.h} ${codec} preset=${preset} crf=${crf} concurrency=${concurrency}`)
 
   await renderMedia({
     composition: { ...composition, durationInFrames: Math.ceil(durationInSeconds * 30), width: dims.w, height: dims.h },
@@ -319,10 +328,12 @@ async function startLocalRender(projectId: string, durationInSeconds: number) {
     codec,
     outputLocation,
     inputProps,
-    concurrency: Math.max(1, require('os').cpus().length - 1),
-    ...(codec === 'h264' ? { crf, x264Preset: project.exportQuality === 'draft' ? 'ultrafast' : project.exportQuality === '4k' ? 'slow' : 'medium' } : {}),
-    timeoutInMilliseconds: 5 * 60 * 1000,
-    chromiumOptions: { disableWebSecurity: true },
+    concurrency,
+    imageFormat: 'jpeg',
+    jpegQuality: jpegQ,
+    ...(codec === 'h264' ? { crf, x264Preset: preset } : {}),
+    timeoutInMilliseconds: timeoutMin * 60 * 1000,
+    chromiumOptions: { disableWebSecurity: true, gl: 'angle' },
     ...(chromePath ? { browserExecutable: chromePath } : {}),
     onProgress: ({ progress }) => {
       const pct = Math.round(progress * 100)
