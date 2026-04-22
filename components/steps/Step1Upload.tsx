@@ -98,47 +98,34 @@ export default function Step1Upload() {
   const handleUpload = async () => {
     if (!store.audioFile) return
 
-    store.setMetadata(localTitle.trim() || 'Unknown', localArtist.trim() || 'Unknown', store.duration)
-
     setUploading(true)
     setError('')
+
     try {
-      const fd = new FormData()
-      fd.append('audio', store.audioFile)
-      if (store.artworkFile) fd.append('artwork', store.artworkFile)
-      const res = await fetch('/api/upload', { method: 'POST', body: fd })
-      if (!res.ok) {
-        let errMsg = `Upload failed (HTTP ${res.status})`
-        try { const body = await res.json(); if (body?.error) errMsg = body.error } catch { /* ignore */ }
-        throw new Error(errMsg)
-      }
-      const data = await res.json()
+      // ── Everything runs in the browser — zero server upload needed ──────────
+      // renderMediaOnWeb renders locally in the browser tab and can read blob:
+      // URLs directly. No Vercel Blob, no /tmp, no storage costs ever.
 
-      store.setAudioPath(data.audioPath)
-      store.setArtworkPath(data.artworkPath)
+      // Create stable blob: URLs the Remotion renderer can fetch
+      const audioBlobUrl   = URL.createObjectURL(store.audioFile)
+      const artworkBlobUrl = store.artworkFile
+        ? URL.createObjectURL(store.artworkFile)
+        : ''
 
-      const finalTitle  = localTitle.trim()  || data.title  || 'Unknown'
-      const finalArtist = localArtist.trim() || data.artist || 'Unknown'
-      store.setMetadata(finalTitle, finalArtist, data.duration)
+      store.setAudioPath(audioBlobUrl)
+      store.setArtworkPath(artworkBlobUrl)
+
+      // Final metadata — prefer what the user typed over filename fallback
+      const finalTitle  = localTitle.trim()  || store.songTitle  || store.audioFile.name.replace(/\.[^/.]+$/, '') || 'Unknown'
+      const finalArtist = localArtist.trim() || store.artist     || 'Unknown'
+      store.setMetadata(finalTitle, finalArtist, store.duration)
       setLocalTitle(finalTitle)
       setLocalArtist(finalArtist)
 
-      // ✅ Mark as properly uploaded — prevents ghost-state UI bug
       store.setIsUploaded(true)
       store.setCurrentStep(2)
     } catch (err: unknown) {
-      // Try to extract the actual server-side error message
-      let msg = 'Upload failed. Please try again.'
-      if (err instanceof Response || err instanceof Error) {
-        msg = err instanceof Error ? err.message : msg
-      }
-      // If the response came back non-ok, the JSON body has an `error` field
-      try {
-        if (err && typeof err === 'object' && 'json' in err) {
-          const body = await (err as Response).json()
-          if (body?.error) msg = body.error
-        }
-      } catch { /* ignore */ }
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.'
       setError(msg)
     } finally {
       setUploading(false)
@@ -350,7 +337,7 @@ export default function Step1Upload() {
         {uploading ? (
           <span className="flex items-center justify-center gap-3">
             <span className="w-6 h-6 border-4 border-black border-t-white rounded-full animate-spin" />
-            Uploading...
+            Processing...
           </span>
         ) : (
           <span className="flex items-center justify-center gap-2">
