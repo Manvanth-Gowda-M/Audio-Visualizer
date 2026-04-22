@@ -3,14 +3,16 @@ import { useStore } from '@/lib/store'
 import Link from 'next/link'
 import Step1Upload from '@/components/steps/Step1Upload'
 import Step2Lyrics from '@/components/steps/Step2Lyrics'
+import StepCaption from '@/components/steps/StepCaption'
 import Step3Customize from '@/components/steps/Step3Customize'
 import Step4Export from '@/components/steps/Step4Export'
 
 const STEPS = [
-  { n: 1, icon: '🎵', label: 'Media',  sub: 'Audio + Artwork' },
-  { n: 2, icon: '📝', label: 'Lyrics', sub: 'Lyrics (optional)' },
-  { n: 3, icon: '🎨', label: 'Style',  sub: 'Style' },
-  { n: 4, icon: '⬇️', label: 'Export', sub: 'Render' },
+  { n: 1, icon: '🎵', label: 'Media',    sub: 'Audio + Artwork' },
+  { n: 2, icon: '📝', label: 'Lyrics',   sub: 'Lyrics (optional)' },
+  { n: 3, icon: '✍️', label: 'Captions', sub: 'Text overlays' },
+  { n: 4, icon: '🎨', label: 'Style',    sub: 'Style' },
+  { n: 5, icon: '⬇️', label: 'Export',   sub: 'Render' },
 ]
 
 export default function CreatePage() {
@@ -64,7 +66,7 @@ export default function CreatePage() {
             return (
               <button
                 key={s.n}
-                onClick={() => done && setCurrentStep(s.n as 1|2|3|4)}
+                onClick={() => done && setCurrentStep(s.n as 1|2|3|4|5)}
                 disabled={!done && !active}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
@@ -151,7 +153,7 @@ export default function CreatePage() {
             return (
               <button
                 key={s.n}
-                onClick={() => done && setCurrentStep(s.n as 1|2|3|4)}
+                onClick={() => done && setCurrentStep(s.n as 1|2|3|4|5)}
                 disabled={!done && !active}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10,
@@ -249,8 +251,9 @@ export default function CreatePage() {
               }}>
                 {currentStep === 1 && '1. Upload Media'}
                 {currentStep === 2 && '2. Add Lyrics'}
-                {currentStep === 3 && '3. Pick Style'}
-                {currentStep === 4 && '4. Export'}
+                {currentStep === 3 && '3. Caption Studio'}
+                {currentStep === 4 && '4. Pick Style'}
+                {currentStep === 5 && '5. Export'}
               </h1>
               <p style={{
                 color: 'rgba(255,255,255,0.3)', fontWeight: 600, fontSize: 12, marginTop: 8,
@@ -258,8 +261,9 @@ export default function CreatePage() {
               }}>
                 {currentStep === 1 && 'Drop your audio file and album artwork to get started'}
                 {currentStep === 2 && 'Lyrics are auto-fetched — edit, adjust timing, or skip entirely'}
-                {currentStep === 3 && 'Pick a template, accent color, and typography style'}
-                {currentStep === 4 && 'Your video is being rendered — this takes 1–3 minutes'}
+                {currentStep === 3 && 'Add text overlays with custom fonts, styles, animations & timing'}
+                {currentStep === 4 && 'Pick a template, accent color, and typography style'}
+                {currentStep === 5 && 'Your video is being rendered — this takes 1–3 minutes'}
               </p>
             </div>
 
@@ -267,8 +271,9 @@ export default function CreatePage() {
             <div key={currentStep} className="animate-fade-in">
               {currentStep === 1 && <Step1Upload />}
               {currentStep === 2 && <Step2Lyrics />}
-              {currentStep === 3 && <Step3Customize />}
-              {currentStep === 4 && <Step4Export />}
+              {currentStep === 3 && <StepCaption />}
+              {currentStep === 4 && <Step3Customize />}
+              {currentStep === 5 && <Step4Export />}
             </div>
           </div>
         </div>

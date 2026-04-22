@@ -6,6 +6,50 @@ export interface LyricLine {
   text: string
 }
 
+export type CaptionPosition =
+  | 'top-left' | 'top-center' | 'top-right'
+  | 'middle-left' | 'center' | 'middle-right'
+  | 'bottom-left' | 'bottom-center' | 'bottom-right'
+
+export type CaptionAnimation =
+  | 'none' | 'fade' | 'slideUp' | 'slideDown'
+  | 'slideLeft' | 'slideRight' | 'zoom' | 'typewriter' | 'bounce'
+
+export type CaptionStylePreset =
+  | 'minimal' | 'cinema' | 'neon' | 'brutalist' | 'gradient'
+  | 'vintage' | 'hiphop' | 'lyric' | 'studio' | 'glitch'
+
+export interface Caption {
+  id: string
+  text: string
+  startTime: number
+  endTime: number
+  font: string
+  fontFamily: string
+  stylePreset: CaptionStylePreset
+  color: string
+  gradientFrom: string
+  gradientTo: string
+  useGradient: boolean
+  position: CaptionPosition
+  fontSize: number
+  animation: CaptionAnimation
+  bold: boolean
+  italic: boolean
+  outline: boolean
+  outlineColor: string
+  outlineWidth: number
+  glow: boolean
+  glowColor: string
+  glowIntensity: number
+  shadow: boolean
+  textAlign: 'left' | 'center' | 'right'
+  backgroundColor: string
+  backgroundOpacity: number
+  letterSpacing: number
+  uppercase: boolean
+}
+
 export interface AppState {
   audioFile: File | null
   audioUrl: string | null
@@ -20,6 +64,7 @@ export interface AppState {
   duration: number
   waveformData: number[]
 
+  captions: Caption[]
   lyrics: LyricLine[]
   lyricsSource: 'lrclib' | 'megalobiz' | 'rclyricsband' | 'genius' | 'whisper' | 'manual' | null
   lyricsLoading: boolean
@@ -43,7 +88,7 @@ export interface AppState {
   renderStatus: 'idle' | 'queued' | 'processing' | 'done' | 'error'
   renderProgress: number
   outputUrl: string | null
-  currentStep: 1 | 2 | 3 | 4
+  currentStep: 1 | 2 | 3 | 4 | 5
 
   setAudio: (file: File, url: string) => void
   setArtwork: (file: File, url: string) => void
@@ -53,6 +98,10 @@ export interface AppState {
   setArtworkPath: (path: string) => void
   setIsUploaded: (v: boolean) => void
   /** Wipe all file/media state so Step1 shows fresh drop zones. Keeps template & style prefs. */
+  addCaption: (caption: Caption) => void
+  updateCaption: (id: string, updates: Partial<Caption>) => void
+  removeCaption: (id: string) => void
+  setCaptions: (captions: Caption[]) => void
   clearFiles: () => void
   setLyrics: (lyrics: LyricLine[], source: AppState['lyricsSource'], synced?: boolean) => void
   setLyricsLoading: (loading: boolean) => void
@@ -67,7 +116,7 @@ export interface AppState {
   setLabelText: (text: string) => void
   setThemeColor: (color: AppState['themeColor']) => void
   setFontStyle: (style: AppState['fontStyle']) => void
-  setCurrentStep: (step: 1 | 2 | 3 | 4) => void
+  setCurrentStep: (step: 1 | 2 | 3 | 4 | 5) => void
   setRenderStatus: (status: AppState['renderStatus'], progress?: number) => void
   setOutputUrl: (url: string) => void
   setProjectId: (id: string) => void
@@ -86,6 +135,7 @@ const initialState = {
   artist: '',
   duration: 0,
   waveformData: [],
+  captions: [],
   lyrics: [],
   lyricsSource: null as AppState['lyricsSource'],
   lyricsLoading: false,
@@ -105,7 +155,7 @@ const initialState = {
   renderStatus: 'idle' as AppState['renderStatus'],
   renderProgress: 0,
   outputUrl: null as string | null,
-  currentStep: 1 as AppState['currentStep'],
+  currentStep: 1 as (1|2|3|4|5),
 }
 
 const fileResetState = {
@@ -120,6 +170,7 @@ const fileResetState = {
   artist: '',
   duration: 0,
   waveformData: [],
+  captions: [],
   lyrics: [],
   lyricsSource: null as AppState['lyricsSource'],
   lyricsSynced: false,
@@ -127,7 +178,7 @@ const fileResetState = {
   renderStatus: 'idle' as AppState['renderStatus'],
   renderProgress: 0,
   outputUrl: null as string | null,
-  currentStep: 1 as AppState['currentStep'],
+  currentStep: 1 as (1|2|3|4|5),
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -139,6 +190,10 @@ export const useStore = create<AppState>((set) => ({
   setAudioPath: (path) => set({ audioPath: path }),
   setArtworkPath: (path) => set({ artworkPath: path }),
   setIsUploaded: (v) => set({ isUploaded: v }),
+  addCaption: (caption) => set(s => ({ captions: [...s.captions, caption] })),
+  updateCaption: (id, updates) => set(s => ({ captions: s.captions.map(c => c.id === id ? { ...c, ...updates } : c) })),
+  removeCaption: (id) => set(s => ({ captions: s.captions.filter(c => c.id !== id) })),
+  setCaptions: (captions) => set({ captions }),
   clearFiles: () => set(fileResetState),
   setLyrics: (lyrics, source, synced = false) => set({ lyrics, lyricsSource: source, lyricsSynced: synced }),
   setLyricsLoading: (loading) => set({ lyricsLoading: loading }),
@@ -157,7 +212,7 @@ export const useStore = create<AppState>((set) => ({
   setLabelText: (text) => set({ labelText: text }),
   setThemeColor: (color) => set({ themeColor: color }),
   setFontStyle: (style) => set({ fontStyle: style }),
-  setCurrentStep: (step) => set({ currentStep: step }),
+  setCurrentStep: (step: 1|2|3|4|5) => set({ currentStep: step }),
   setRenderStatus: (status, progress) =>
     set((s) => ({ renderStatus: status, renderProgress: progress ?? s.renderProgress })),
   setOutputUrl: (url) => set({ outputUrl: url }),
