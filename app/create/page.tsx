@@ -24,6 +24,8 @@ export default function CreatePage() {
       display: 'flex',
       flexDirection: 'column',
       fontFamily: "'Inter', sans-serif",
+      overflowX: 'hidden',
+      maxWidth: '100vw',
     }}>
 
       {/* ── Top bar ── */}
@@ -124,7 +126,7 @@ export default function CreatePage() {
       </header>
 
       {/* ── Main content ── */}
-      <main style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <main style={{ flex: 1, display: 'flex', overflow: 'hidden', maxWidth: '100vw', minWidth: 0 }}>
 
         {/* Sidebar — desktop only */}
         <aside style={{
@@ -221,7 +223,7 @@ export default function CreatePage() {
         </aside>
 
         {/* Step content area */}
-        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative', maxWidth: '100%', minWidth: 0 }}>
           {/* Ambient glow */}
           <div style={{
             position: 'fixed', top: '30%', left: '55%',
