@@ -107,7 +107,11 @@ export default function Step1Upload() {
       fd.append('audio', store.audioFile)
       if (store.artworkFile) fd.append('artwork', store.artworkFile)
       const res = await fetch('/api/upload', { method: 'POST', body: fd })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        let errMsg = `Upload failed (HTTP ${res.status})`
+        try { const body = await res.json(); if (body?.error) errMsg = body.error } catch { /* ignore */ }
+        throw new Error(errMsg)
+      }
       const data = await res.json()
 
       store.setAudioPath(data.audioPath)
@@ -122,8 +126,20 @@ export default function Step1Upload() {
       // ✅ Mark as properly uploaded — prevents ghost-state UI bug
       store.setIsUploaded(true)
       store.setCurrentStep(2)
-    } catch {
-      setError('Upload failed. Please try again.')
+    } catch (err: unknown) {
+      // Try to extract the actual server-side error message
+      let msg = 'Upload failed. Please try again.'
+      if (err instanceof Response || err instanceof Error) {
+        msg = err instanceof Error ? err.message : msg
+      }
+      // If the response came back non-ok, the JSON body has an `error` field
+      try {
+        if (err && typeof err === 'object' && 'json' in err) {
+          const body = await (err as Response).json()
+          if (body?.error) msg = body.error
+        }
+      } catch { /* ignore */ }
+      setError(msg)
     } finally {
       setUploading(false)
     }
