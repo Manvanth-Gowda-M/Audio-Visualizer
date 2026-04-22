@@ -34,6 +34,7 @@ const TEMPLATES = [
   { id: 'retro_cassette', name: 'Retro Cassette', tag: '✦ Premium', desc: 'Audio-driven vintage tape with mapped reel rotation', accent: '#6dd5ed' },
   { id: 'cinematic_vinyl_ui', name: 'Cinematic Vinyl UI', tag: '✦ Premium', desc: 'High-end vinyl visualizer with premium information display', accent: '#aa1738' },
   { id: 'neon_glass',        name: 'Neon Glass',         tag: '✦ New',     desc: 'Animated neon lines background with a centered glassmorphism card', accent: '#e040fb' },
+  { id: 'neumorph_sphere',   name: 'Neumorphic Sphere',  tag: '✦ Premium', desc: 'Dark neumorphic card with audio-reactive 3D metallic sphere', accent: '#a0a0a0' },
 ]
 
 export default function HomePage() {

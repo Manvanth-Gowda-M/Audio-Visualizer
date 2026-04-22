@@ -17,6 +17,7 @@ import { RetroPlayerVisualizer } from './compositions/RetroPlayerVisualizer'
 import { RetroCassetteVisualizer } from './compositions/RetroCassetteVisualizer'
 import { CinematicVinylUIVisualizer } from './compositions/CinematicVinylUIVisualizer'
 import { NeonGlassVisualizer } from './compositions/NeonGlassVisualizer'
+import { NeumorphicSphereVisualizer } from './compositions/NeumorphicSphereVisualizer'
 
 import { VisualizerProps } from './compositions/shared'
 
@@ -57,6 +58,7 @@ const standardCompositions = [
   { id: 'SymmetricalVisualizer', component: SymmetricalVisualizer },
   { id: 'cinematic_vinyl_ui', component: CinematicVinylUIVisualizer },
   { id: 'neon_glass', component: NeonGlassVisualizer },
+  { id: 'neumorph_sphere', component: NeumorphicSphereVisualizer },
 ]
 
 export const RemotionRoot = () => (
