@@ -18,11 +18,12 @@ const SymmetricalThumb    = dynamic(() => import('./thumbs/SymmetricalThumb'),  
 const RetroThumb          = dynamic(() => import('./thumbs/RetroThumb'),            { ssr: false })
 const RetroCassetteThumb  = dynamic(() => import('./thumbs/RetroCassetteThumb'),   { ssr: false })
 const CinematicVinylUIThumb = dynamic(() => import('./thumbs/CinematicVinylUIThumb'), { ssr: false })
+const NeonGlassThumb        = dynamic(() => import('./thumbs/NeonGlassThumb'),       { ssr: false })
 
 type TemplateId =
   | 'circle' | 'vinyl' | 'waveform' | 'glitch'
   | 'particles' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular'
-  | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui'
+  | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'neon_glass'
 
 interface Props {
   id: TemplateId
@@ -52,6 +53,7 @@ function ThumbRenderer({ id, accent }: { id: TemplateId; accent: string }) {
   if (id === 'retro')            return <RetroThumb />
   if (id === 'retro_cassette')   return <RetroCassetteThumb />
   if (id === 'cinematic_vinyl_ui') return <CinematicVinylUIThumb />
+  if (id === 'neon_glass')         return <NeonGlassThumb />
   return null
 }
 

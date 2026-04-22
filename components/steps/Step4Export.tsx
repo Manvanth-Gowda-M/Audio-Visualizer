@@ -73,6 +73,7 @@ export default function Step4Export() {
         retro:       () => import('@/remotion/compositions/RetroPlayerVisualizer').then(m => m.RetroPlayerVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         retro_cassette: () => import('@/remotion/compositions/RetroCassetteVisualizer').then(m => m.RetroCassetteVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         cinematic_vinyl_ui: () => import('@/remotion/compositions/CinematicVinylUIVisualizer').then(m => m.CinematicVinylUIVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        neon_glass:          () => import('@/remotion/compositions/NeonGlassVisualizer').then(m => m.NeonGlassVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
       }
 
       const component = await (compositionMap[store.template] ?? compositionMap.circle)()
