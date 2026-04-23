@@ -137,7 +137,6 @@ export default function CreatePage() {
           borderRight: '1px solid rgba(255,255,255,0.07)',
           background: 'rgba(255,255,255,0.02)',
           padding: '24px 14px',
-          display: 'flex',
           flexDirection: 'column',
           gap: 6,
           overflowY: 'auto',
@@ -225,7 +224,7 @@ export default function CreatePage() {
         </aside>
 
         {/* Step content area */}
-        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative', maxWidth: '100%', minWidth: 0 }}>
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative', maxWidth: '100%', minWidth: 0, width: '100%' }}>
           {/* Ambient glow */}
           <div style={{
             position: 'fixed', top: '30%', left: '55%',
@@ -238,8 +237,10 @@ export default function CreatePage() {
           <div style={{
             maxWidth: 880,
             margin: '0 auto',
-            padding: 'clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px) 60px',
+            padding: 'clamp(16px, 4vw, 40px) clamp(12px, 4vw, 40px) 80px',
             position: 'relative', zIndex: 1,
+            boxSizing: 'border-box',
+            width: '100%',
           }}>
             {/* Step header */}
             <div style={{ marginBottom: 28, paddingBottom: 22, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>

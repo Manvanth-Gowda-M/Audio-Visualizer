@@ -18,6 +18,22 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* ── Mobile overflow containment ── */
+/* Prevent box-shadow from triggering horizontal scroll on small screens */
+@media (max-width: 768px) {
+  .neo-box,
+  .neo-btn,
+  .neo-input {
+    /* Scale down brutal shadows on mobile so they don't overflow viewport */
+    box-shadow: 4px 4px 0px 0px #000;
+  }
+  /* All direct children of the steps content grid should respect container width */
+  .space-y-6 > * {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
+
 html {
   /* Prevent horizontal scroll on mobile */
   overflow-x: hidden;
