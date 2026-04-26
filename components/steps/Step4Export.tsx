@@ -21,9 +21,9 @@ const ASPECTS = [
 ] as const
 
 const qualityDims: Record<string, { w: number; h: number; fps: number; jpegQ: number; scale: number }> = {
-  draft:  { w: 854,  h: 480,  fps: 24, jpegQ: 40, scale: 0.5  },
-  hd:     { w: 1280, h: 720,  fps: 24, jpegQ: 60, scale: 0.75 },
-  fullhd: { w: 1920, h: 1080, fps: 30, jpegQ: 75, scale: 1    },
+  draft:  { w: 854,  h: 480,  fps: 15, jpegQ: 40, scale: 0.5  }, // Extremely fast
+  hd:     { w: 1280, h: 720,  fps: 24, jpegQ: 60, scale: 0.75 }, // Balanced
+  fullhd: { w: 1920, h: 1080, fps: 30, jpegQ: 80, scale: 1    }, // Premium
 }
 
 export default function Step4Export() {
@@ -76,12 +76,19 @@ export default function Step4Export() {
         neon_glass:          () => import('@/remotion/compositions/NeonGlassVisualizer').then(m => m.NeonGlassVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         neumorph_sphere:     () => import('@/remotion/compositions/NeumorphicSphereVisualizer').then(m => m.NeumorphicSphereVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         warm_floating:       () => import('@/remotion/compositions/WarmFloatingPlayerVisualizer').then(m => m.WarmFloatingPlayerVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        aesthetic:           () => import('@/remotion/compositions/AestheticCollageVisualizer').then(m => m.AestheticCollageVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        premium_film:        () => import('@/remotion/compositions/PremiumFilmVisualizer').then(m => m.PremiumFilmVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        luxury_glass:        () => import('@/remotion/compositions/LuxuryGlassVisualizer').then(m => m.LuxuryGlassVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        editorial_polaroid:  () => import('@/remotion/compositions/EditorialPolaroidVisualizer').then(m => m.EditorialPolaroidVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        scrapbook_journal:   () => import('@/remotion/compositions/ScrapbookJournalVisualizer').then(m => m.ScrapbookJournalVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        cyberpunk_hologram:  () => import('@/remotion/compositions/CyberpunkHologramVisualizer').then(m => m.CyberpunkHologramVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        museum_gallery:      () => import('@/remotion/compositions/MuseumGalleryVisualizer').then(m => m.MuseumGalleryVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
       }
 
       const component = await (compositionMap[store.template] ?? compositionMap.circle)()
 
       const isApple    = store.template === 'appleplayer'
-      const isPortrait = isApple || store.template === 'circular'
+      const isPortrait = isApple || store.template === 'circular' || ['premium_film', 'luxury_glass', 'editorial_polaroid', 'scrapbook_journal', 'cyberpunk_hologram', 'museum_gallery'].includes(store.template)
       const isSquare   = store.template === 'retro'
       const q          = qualityDims[store.exportQuality] ?? qualityDims.hd
       const fps        = q.fps
@@ -105,6 +112,7 @@ export default function Step4Export() {
       // each upload goes to its own unique CDN URL, no /tmp race conditions.
       const audioSrc   = store.audioPath   ?? store.audioUrl   ?? ''
       const artworkSrc = store.artworkPath ?? store.artworkUrl ?? ''
+      const personImagesSrc = store.personImagePaths ?? []
 
       const inputProps = isApple ? {
         audioSrc,
@@ -118,6 +126,7 @@ export default function Step4Export() {
       } : {
         audioSrc,
         artworkSrc,
+        personImages: personImagesSrc,
         lyrics:      store.lyrics,
         accentColor: store.accentColor,
         typoStyle:   store.typoStyle,
@@ -145,6 +154,7 @@ export default function Step4Export() {
         inputProps,
         container,
         scale: renderScale,
+        hardwareAcceleration: 'prefer-hardware', // Speeds up encoding significantly
         onProgress: ({ progress: p }) => {
           const pct = Math.round(p * 100)
           setProgress(pct)
@@ -160,9 +170,15 @@ export default function Step4Export() {
       store.setOutputUrl(url)
 
     } catch (err: unknown) {
-      if (err instanceof Error && err.name === 'AbortError') return
-      console.error('Client render error:', err)
       const msg = err instanceof Error ? err.message : String(err)
+      
+      if (msg.includes('cancelled') || msg.includes('canceled') || (err instanceof Error && err.name === 'AbortError')) {
+        setError('Render process was cancelled')
+        store.setRenderStatus('error')
+        return
+      }
+
+      console.error('Client render error:', err)
       setError(msg)
       store.setRenderStatus('error')
     }
@@ -391,32 +407,50 @@ export default function Step4Export() {
       )}
 
       {status === 'error' && (
-        <div className="space-y-6 w-full max-w-md relative z-10 p-8 rounded-3xl bg-red-950/30 backdrop-blur-xl border border-red-500/20 shadow-2xl">
-          <div className="w-24 h-24 rounded-full bg-red-500/20 flex items-center justify-center mx-auto text-5xl ring-8 ring-red-500/10">
-            ❌
+        <div className={`space-y-6 w-full max-w-md relative z-10 p-8 rounded-3xl backdrop-blur-xl border shadow-2xl ${
+          error?.includes('cancelled') 
+            ? 'bg-orange-950/30 border-orange-500/20' 
+            : 'bg-red-950/30 border-red-500/20'
+        }`}>
+          <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto text-5xl ring-8 ${
+            error?.includes('cancelled') 
+              ? 'bg-orange-500/20 ring-orange-500/10' 
+              : 'bg-red-500/20 ring-red-500/10'
+          }`}>
+            {error?.includes('cancelled') ? '🛑' : '❌'}
           </div>
           <div>
-            <p className="text-red-400 text-2xl font-black mb-2">Render Failed</p>
-            <p className="text-zinc-400 text-sm">Something went wrong while rendering your video.</p>
+            <p className={`text-2xl font-black mb-2 ${error?.includes('cancelled') ? 'text-orange-400' : 'text-red-400'}`}>
+              {error?.includes('cancelled') ? 'Render Cancelled' : 'Render Failed'}
+            </p>
+            <p className="text-zinc-400 text-sm">
+              {error?.includes('cancelled') ? 'You have cancelled the rendering process.' : 'Something went wrong while rendering your video.'}
+            </p>
           </div>
           
-          {error && (
+          {!error?.includes('cancelled') && error && (
             <div className="bg-black/40 border border-red-500/30 rounded-xl p-4 text-left max-h-32 overflow-y-auto custom-scrollbar">
               <p className="text-red-300 font-mono text-xs break-words">{error}</p>
             </div>
           )}
           
-          <div className="bg-red-500/10 rounded-xl p-4 text-left border border-red-500/20">
-            <h4 className="text-red-300 text-xs font-bold uppercase tracking-wider mb-2">Troubleshooting Tips</h4>
-            <ul className="text-red-200/70 text-xs space-y-1.5 list-disc list-inside">
-              <li>Try switching Quality to Draft</li>
-              <li>Ensure audio file is not missing or corrupted</li>
-              <li>Refresh page and try again</li>
-            </ul>
-          </div>
+          {!error?.includes('cancelled') && (
+            <div className="bg-red-500/10 rounded-xl p-4 text-left border border-red-500/20">
+              <h4 className="text-red-300 text-xs font-bold uppercase tracking-wider mb-2">Troubleshooting Tips</h4>
+              <ul className="text-red-200/70 text-xs space-y-1.5 list-disc list-inside">
+                <li>Try switching Quality to Draft</li>
+                <li>Ensure audio file is not missing or corrupted</li>
+                <li>Refresh page and try again</li>
+              </ul>
+            </div>
+          )}
           
-          <button onClick={reset} className="w-full py-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-colors shadow-[0_0_20px_rgba(220,38,38,0.3)]">
-            Change Settings & Retry
+          <button onClick={reset} className={`w-full py-4 rounded-xl text-white font-bold transition-colors shadow-[0_0_20px_rgba(220,38,38,0.3)] ${
+            error?.includes('cancelled')
+              ? 'bg-orange-600 hover:bg-orange-500 shadow-[0_0_20px_rgba(234,88,12,0.3)]'
+              : 'bg-red-600 hover:bg-red-500 shadow-[0_0_20px_rgba(220,38,38,0.3)]'
+          }`}>
+            {error?.includes('cancelled') ? 'Back to Settings' : 'Change Settings & Retry'}
           </button>
         </div>
       )}

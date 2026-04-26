@@ -333,6 +333,7 @@ export function EffectsWrapper({
       width: '100%', height: '100%',
       transform: transform || undefined,
       transformOrigin: 'center center',
+      willChange: transform ? 'transform' : undefined,
     }}>
       {children}
     </div>

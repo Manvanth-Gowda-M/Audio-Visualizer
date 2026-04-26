@@ -13,6 +13,7 @@ export default function Step1Upload() {
   const [error, setError]               = useState('')
   const [audioDragging, setAudioDrag]   = useState(false)
   const [artDragging,   setArtDrag]     = useState(false)
+  const [personDragging, setPersonDrag] = useState(false)
 
   // Local editable fields — user can fix wrong ID3 tags
   const [localTitle,  setLocalTitle]  = useState(store.songTitle)
@@ -95,6 +96,31 @@ export default function Step1Upload() {
     store.setArtwork(file, URL.createObjectURL(file))
   }, [store])
 
+  const handlePersonFiles = useCallback((files: FileList | File[]) => {
+    const validFiles: File[] = []
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase()
+      if (ACCEPTED_ART.includes(ext) && file.size <= 10 * 1024 * 1024) {
+        validFiles.push(file)
+      }
+    }
+    if (validFiles.length === 0) {
+      setError('Please upload valid JPG, PNG, or WEBP images under 10MB.');
+      return;
+    }
+    setError('')
+    const maxFiles = 4
+    const newFiles = [...store.personImageFiles, ...validFiles].slice(0, maxFiles)
+    store.setPersonImages(newFiles)
+  }, [store])
+
+  const removePersonImage = (index: number) => {
+    const newFiles = [...store.personImageFiles]
+    newFiles.splice(index, 1)
+    store.setPersonImages(newFiles)
+  }
+
   const handleUpload = async () => {
     if (!store.audioFile) return
 
@@ -111,9 +137,11 @@ export default function Step1Upload() {
       const artworkBlobUrl = store.artworkFile
         ? URL.createObjectURL(store.artworkFile)
         : ''
+      const personBlobUrls = store.personImageFiles.map(file => URL.createObjectURL(file))
 
       store.setAudioPath(audioBlobUrl)
       store.setArtworkPath(artworkBlobUrl)
+      store.setPersonImagePaths(personBlobUrls)
 
       // Final metadata — prefer what the user typed over filename fallback
       const finalTitle  = localTitle.trim()  || store.songTitle  || store.audioFile.name.replace(/\.[^/.]+$/, '') || 'Unknown'
@@ -138,6 +166,16 @@ export default function Step1Upload() {
     input.onchange = (e) => {
       const f = (e.target as HTMLInputElement).files?.[0]
       if (f) handler(f)
+    }
+    input.click()
+  }
+
+  const openMultiplePicker = (accept: string, handler: (files: FileList) => void) => {
+    const input = document.createElement('input')
+    input.type = 'file'; input.accept = accept; input.multiple = true
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files
+      if (files && files.length > 0) handler(files)
     }
     input.click()
   }
@@ -278,6 +316,59 @@ export default function Step1Upload() {
         </div>
       </div>
 
+      {/* Collage Images (Only for aesthetic template) */}
+      {store.template === 'aesthetic' && (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setPersonDrag(true) }}
+          onDragLeave={() => setPersonDrag(false)}
+          onDrop={(e) => { e.preventDefault(); setPersonDrag(false); if (e.dataTransfer.files.length) handlePersonFiles(e.dataTransfer.files) }}
+          onClick={() => openMultiplePicker(ACCEPTED_ART.join(','), handlePersonFiles)}
+          className={`relative border-4 border-dashed border-black cursor-pointer transition-all min-h-[180px] flex flex-col items-center justify-center gap-4 p-6 overflow-hidden ${
+            personDragging ? 'bg-[#ff2056]'
+            : store.personImageFiles.length > 0 ? 'bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-solid translate-x-[-4px] translate-y-[-4px]'
+            : 'bg-[#fcfcfc] hover:bg-[#ff2056]'
+          }`}
+        >
+          <span className="absolute top-3 right-3 text-xs font-black uppercase px-2 py-1 border-2 border-black bg-[#ff2056] text-white z-10">Optional (Max 4)</span>
+          
+          {store.personImageFiles.length > 0 ? (
+            <div className="w-full">
+              <p className="text-black font-black uppercase text-lg text-center mb-4">Collage Images ({store.personImageFiles.length}/4)</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4" onClick={(e) => e.stopPropagation()}>
+                {store.personImageFiles.map((file, i) => (
+                  <div key={i} className="relative aspect-square border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={URL.createObjectURL(file)} alt={`person ${i}`} className="w-full h-full object-cover" />
+                    <button 
+                      onClick={() => removePersonImage(i)}
+                      className="absolute -top-3 -right-3 w-8 h-8 bg-[#ff2056] border-2 border-black text-white font-black flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {store.personImageFiles.length < 4 && (
+                  <div 
+                    onClick={() => openMultiplePicker(ACCEPTED_ART.join(','), handlePersonFiles)}
+                    className="aspect-square border-4 border-dashed border-black bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-3xl">+</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="w-14 h-14 border-4 border-black bg-white flex items-center justify-center text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">📸</div>
+              <div className="text-center mt-2">
+                <p className="text-black font-black uppercase text-lg">Drop person images here</p>
+                <p className="text-black font-bold text-sm mt-1">Select up to 4 images for the collage</p>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Waveform */}
       {store.waveformData.length > 0 && (
         <div className="bg-[#06d6a0] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-5">
@@ -341,15 +432,13 @@ export default function Step1Upload() {
           </span>
         ) : (
           <span className="flex items-center justify-center gap-2">
-            Continue to Lyrics
-            <span className="text-sm font-bold opacity-80">(optional)</span>
-            →
+            Continue to Style →
           </span>
         )}
       </button>
 
       <p className="text-center text-black font-bold uppercase text-sm">
-        Audio + Artwork are required · Lyrics are optional
+        Audio + Artwork are required to continue
       </p>
     </div>
   )

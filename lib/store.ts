@@ -57,6 +57,8 @@ export interface AppState {
   artworkFile: File | null
   artworkUrl: string | null
   artworkPath: string | null
+  personImageFiles: File[]
+  personImagePaths: string[]
   /** true ONLY after a successful POST /api/upload — never when just a local File is dropped */
   isUploaded: boolean
   songTitle: string
@@ -71,7 +73,7 @@ export interface AppState {
   lyricsSynced: boolean
   lyricsFont: string
 
-  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular' | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui'
+  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular' | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'aesthetic'
   typoStyle: 'minimal' | 'bold' | 'neon'
   accentColor: string
   labelText: string
@@ -88,14 +90,16 @@ export interface AppState {
   renderStatus: 'idle' | 'queued' | 'processing' | 'done' | 'error'
   renderProgress: number
   outputUrl: string | null
-  currentStep: 1 | 2 | 3 | 4 | 5
+  currentStep: 1 | 2 | 3
 
   setAudio: (file: File, url: string) => void
   setArtwork: (file: File, url: string) => void
+  setPersonImages: (files: File[]) => void
   setMetadata: (title: string, artist: string, duration: number) => void
   setWaveformData: (data: number[]) => void
   setAudioPath: (path: string) => void
   setArtworkPath: (path: string) => void
+  setPersonImagePaths: (paths: string[]) => void
   setIsUploaded: (v: boolean) => void
   /** Wipe all file/media state so Step1 shows fresh drop zones. Keeps template & style prefs. */
   addCaption: (caption: Caption) => void
@@ -116,7 +120,7 @@ export interface AppState {
   setLabelText: (text: string) => void
   setThemeColor: (color: AppState['themeColor']) => void
   setFontStyle: (style: AppState['fontStyle']) => void
-  setCurrentStep: (step: 1 | 2 | 3 | 4 | 5) => void
+  setCurrentStep: (step: 1 | 2 | 3) => void
   setRenderStatus: (status: AppState['renderStatus'], progress?: number) => void
   setOutputUrl: (url: string) => void
   setProjectId: (id: string) => void
@@ -130,6 +134,8 @@ const initialState = {
   artworkFile: null,
   artworkUrl: null,
   artworkPath: null,
+  personImageFiles: [],
+  personImagePaths: [],
   isUploaded: false,
   songTitle: '',
   artist: '',
@@ -155,7 +161,7 @@ const initialState = {
   renderStatus: 'idle' as AppState['renderStatus'],
   renderProgress: 0,
   outputUrl: null as string | null,
-  currentStep: 1 as (1|2|3|4|5),
+  currentStep: 1 as (1|2|3),
 }
 
 const fileResetState = {
@@ -165,6 +171,8 @@ const fileResetState = {
   artworkFile: null,
   artworkUrl: null,
   artworkPath: null,
+  personImageFiles: [],
+  personImagePaths: [],
   isUploaded: false,
   songTitle: '',
   artist: '',
@@ -178,17 +186,19 @@ const fileResetState = {
   renderStatus: 'idle' as AppState['renderStatus'],
   renderProgress: 0,
   outputUrl: null as string | null,
-  currentStep: 1 as (1|2|3|4|5),
+  currentStep: 1 as (1|2|3),
 }
 
 export const useStore = create<AppState>((set) => ({
   ...initialState,
   setAudio: (file, url) => set({ audioFile: file, audioUrl: url }),
   setArtwork: (file, url) => set({ artworkFile: file, artworkUrl: url }),
+  setPersonImages: (files) => set({ personImageFiles: files }),
   setMetadata: (title, artist, duration) => set({ songTitle: title, artist, duration }),
   setWaveformData: (data) => set({ waveformData: data }),
   setAudioPath: (path) => set({ audioPath: path }),
   setArtworkPath: (path) => set({ artworkPath: path }),
+  setPersonImagePaths: (paths) => set({ personImagePaths: paths }),
   setIsUploaded: (v) => set({ isUploaded: v }),
   addCaption: (caption) => set(s => ({ captions: [...s.captions, caption] })),
   updateCaption: (id, updates) => set(s => ({ captions: s.captions.map(c => c.id === id ? { ...c, ...updates } : c) })),
@@ -212,7 +222,7 @@ export const useStore = create<AppState>((set) => ({
   setLabelText: (text) => set({ labelText: text }),
   setThemeColor: (color) => set({ themeColor: color }),
   setFontStyle: (style) => set({ fontStyle: style }),
-  setCurrentStep: (step: 1|2|3|4|5) => set({ currentStep: step }),
+  setCurrentStep: (step: 1|2|3) => set({ currentStep: step }),
   setRenderStatus: (status, progress) =>
     set((s) => ({ renderStatus: status, renderProgress: progress ?? s.renderProgress })),
   setOutputUrl: (url) => set({ outputUrl: url }),

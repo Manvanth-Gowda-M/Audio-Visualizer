@@ -1,5 +1,6 @@
 import React from 'react'
-import { useCurrentFrame, useVideoConfig, Img, Audio } from 'remotion'
+import { useCurrentFrame, useVideoConfig, Img } from 'remotion'
+import { Audio } from '@remotion/media'
 import { useAudioData, visualizeAudio, type MediaUtilsAudioData } from '@remotion/media-utils'
 import { VisualizerProps, getTypographyStyle } from './shared'
 import { EffectsWrapper, EffectsLayer } from '../effects/EffectsLayer'

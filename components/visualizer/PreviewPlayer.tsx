@@ -56,6 +56,36 @@ const compositions = {
   cinematic_vinyl_ui: dynamic(() =>
     import('@/remotion/compositions/CinematicVinylUIVisualizer').then((m) => m.CinematicVinylUIVisualizer)
   ),
+  neon_glass: dynamic(() =>
+    import('@/remotion/compositions/NeonGlassVisualizer').then((m) => m.NeonGlassVisualizer)
+  ),
+  neumorph_sphere: dynamic(() =>
+    import('@/remotion/compositions/NeumorphicSphereVisualizer').then((m) => m.NeumorphicSphereVisualizer)
+  ),
+  warm_floating: dynamic(() =>
+    import('@/remotion/compositions/WarmFloatingPlayerVisualizer').then((m) => m.WarmFloatingPlayerVisualizer)
+  ),
+  aesthetic: dynamic(() =>
+    import('@/remotion/compositions/AestheticCollageVisualizer').then((m) => m.AestheticCollageVisualizer)
+  ),
+  premium_film: dynamic(() =>
+    import('@/remotion/compositions/PremiumFilmVisualizer').then((m) => m.PremiumFilmVisualizer)
+  ),
+  luxury_glass: dynamic(() =>
+    import('@/remotion/compositions/LuxuryGlassVisualizer').then((m) => m.LuxuryGlassVisualizer)
+  ),
+  editorial_polaroid: dynamic(() =>
+    import('@/remotion/compositions/EditorialPolaroidVisualizer').then((m) => m.EditorialPolaroidVisualizer)
+  ),
+  scrapbook_journal: dynamic(() =>
+    import('@/remotion/compositions/ScrapbookJournalVisualizer').then((m) => m.ScrapbookJournalVisualizer)
+  ),
+  cyberpunk_hologram: dynamic(() =>
+    import('@/remotion/compositions/CyberpunkHologramVisualizer').then((m) => m.CyberpunkHologramVisualizer)
+  ),
+  museum_gallery: dynamic(() =>
+    import('@/remotion/compositions/MuseumGalleryVisualizer').then((m) => m.MuseumGalleryVisualizer)
+  ),
 }
 
 export default function PreviewPlayer() {
@@ -73,6 +103,7 @@ export default function PreviewPlayer() {
   // Server paths (store.audioPath) are only needed for the render job.
   const audioSrcForVisualizer   = store.audioUrl ?? ''
   const artworkSrcForVisualizer = store.artworkUrl ?? ''
+  const personImagesForVisualizer = store.personImagePaths ?? []
 
   // Use filename from path as cache buster key
   const audioFilename   = store.audioPath?.split('/').pop() ?? store.audioFile?.name ?? '0'
@@ -82,7 +113,7 @@ export default function PreviewPlayer() {
   // Preview: cap at 60s so it loads fast. Full render uses actual duration.
   const previewDuration = Math.min(store.duration || 30, 60)
   const isApple = store.template === 'appleplayer'
-  const isPortrait = isApple || store.template === 'circular'
+  const isPortrait = isApple || store.template === 'circular' || ['premium_film', 'luxury_glass', 'editorial_polaroid'].includes(store.template)
   const isSquare = store.template === 'retro'
 
   const inputProps = isApple ? {
@@ -97,6 +128,7 @@ export default function PreviewPlayer() {
   } : {
     audioSrc: audioSrcForVisualizer,
     artworkSrc: artworkSrcForVisualizer,
+    personImages: personImagesForVisualizer,
     lyrics: store.lyrics,
     accentColor: store.accentColor,
     typoStyle: store.typoStyle,

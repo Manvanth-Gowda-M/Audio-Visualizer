@@ -19,6 +19,13 @@ import { CinematicVinylUIVisualizer } from './compositions/CinematicVinylUIVisua
 import { NeonGlassVisualizer } from './compositions/NeonGlassVisualizer'
 import { NeumorphicSphereVisualizer } from './compositions/NeumorphicSphereVisualizer'
 import { WarmFloatingPlayerVisualizer } from './compositions/WarmFloatingPlayerVisualizer'
+import { AestheticCollageVisualizer } from './compositions/AestheticCollageVisualizer'
+import { PremiumFilmVisualizer } from './compositions/PremiumFilmVisualizer'
+import { LuxuryGlassVisualizer } from './compositions/LuxuryGlassVisualizer'
+import { EditorialPolaroidVisualizer } from './compositions/EditorialPolaroidVisualizer'
+import { ScrapbookJournalVisualizer } from './compositions/ScrapbookJournalVisualizer'
+import { CyberpunkHologramVisualizer } from './compositions/CyberpunkHologramVisualizer'
+import { MuseumGalleryVisualizer } from './compositions/MuseumGalleryVisualizer'
 
 import { VisualizerProps } from './compositions/shared'
 
@@ -61,6 +68,7 @@ const standardCompositions = [
   { id: 'neon_glass', component: NeonGlassVisualizer },
   { id: 'neumorph_sphere', component: NeumorphicSphereVisualizer },
   { id: 'warm_floating', component: WarmFloatingPlayerVisualizer },
+  { id: 'aesthetic', component: AestheticCollageVisualizer },
 ]
 
 export const RemotionRoot = () => (
@@ -111,6 +119,60 @@ export const RemotionRoot = () => (
       fps={30}
       width={1920}
       height={1080}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="premium_film"
+      component={PremiumFilmVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="luxury_glass"
+      component={LuxuryGlassVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="editorial_polaroid"
+      component={EditorialPolaroidVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="scrapbook_journal"
+      component={ScrapbookJournalVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="cyberpunk_hologram"
+      component={CyberpunkHologramVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="museum_gallery"
+      component={MuseumGalleryVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
       defaultProps={defaultProps}
     />
   </>

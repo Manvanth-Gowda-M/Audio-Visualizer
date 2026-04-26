@@ -108,6 +108,48 @@ const TEMPLATE_META: Record<string, {
       { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Hans Zimmer' },
     ],
   },
+  aesthetic: { name: 'Aesthetic Collage', icon: '🌸', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Khat' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Navzot Ahuja' },
+    ],
+  },
+  premium_film: { name: 'Premium Film', icon: '🎞️', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Interstellar' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Hans Zimmer' },
+    ],
+  },
+  luxury_glass: { name: 'Luxury Glass', icon: '💎', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Euphoria' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Labrinth' },
+    ],
+  },
+  editorial_polaroid: { name: 'Editorial Polaroid', icon: '📸', hasTypo: false, hasAccent: false, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Vogue' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Madonna' },
+    ],
+  },
+  scrapbook_journal: { name: 'Scrapbook Journal', icon: '📓', hasTypo: false, hasAccent: true, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Memories' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. The Vintage Band' },
+    ],
+  },
+  cyberpunk_hologram: { name: 'Cyberpunk Hologram', icon: '🤖', hasTypo: false, hasAccent: true, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Neon City' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. Synthwave Pulse' },
+    ],
+  },
+  museum_gallery: { name: 'Museum Gallery', icon: '🖼️', hasTypo: false, hasAccent: true, hasAppleFields: false,
+    textFields: [
+      { key: 'songTitle', label: 'Song Title', placeholder: 'e.g. Fine Art' },
+      { key: 'artist',    label: 'Artist Name', placeholder: 'e.g. The Curator' },
+    ],
+  },
 }
 
 export default function Step3Customize() {
@@ -370,7 +412,7 @@ export default function Step3Customize() {
       </div>
 
       <button
-        onClick={() => store.setCurrentStep(5)}
+        onClick={() => store.setCurrentStep(3)}
         className="w-full py-4.5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-lg shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_40px_rgba(168,85,247,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-3"
       >
         Render Video

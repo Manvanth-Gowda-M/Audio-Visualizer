@@ -36,6 +36,13 @@ const TEMPLATES = [
   { id: 'neon_glass',        name: 'Neon Glass',         tag: '✦ New',     desc: 'Animated neon lines background with a centered glassmorphism card', accent: '#e040fb' },
   { id: 'neumorph_sphere',   name: 'Neumorphic Sphere',  tag: '✦ Premium', desc: 'Dark neumorphic card with audio-reactive 3D metallic sphere', accent: '#a0a0a0' },
   { id: 'warm_floating',     name: 'Warm Floating',      tag: '✦ New',     desc: 'Soft warm aesthetic floating artwork card with calm mini player', accent: '#c8824a' },
+  { id: 'aesthetic',         name: 'Aesthetic Collage',  tag: '✦ Premium', desc: 'Warm collage with layered images and a floating mini player', accent: '#a65e2e' },
+  { id: 'premium_film',      name: 'Premium Film',       tag: '✦ Luxury',  desc: 'Vertical scrolling film strip with cinematic color grading and warm grain', accent: '#a8917d' },
+  { id: 'luxury_glass',      name: 'Luxury Glass',       tag: '✦ Luxury',  desc: 'Modern glassmorphism with 3D-floating frosted glass cards', accent: '#d1d5db' },
+  { id: 'editorial_polaroid',name: 'Editorial Polaroid', tag: '✦ Luxury',  desc: 'High-fashion polaroid collage with realistic shadows and typography', accent: '#8a8277' },
+  { id: 'scrapbook_journal', name: 'Scrapbook Journal',  tag: '✦ Luxury',  desc: 'Vintage grunge-aesthetic collage with paper textures and tape', accent: '#8b7355' },
+  { id: 'cyberpunk_hologram',name: 'Cyberpunk Hologram', tag: '✦ Luxury',  desc: 'Futuristic dark-tech template with glowing screens and scanlines', accent: '#00ffff' },
+  { id: 'museum_gallery',    name: 'Museum Gallery',     tag: '✦ Luxury',  desc: 'Sophisticated art gallery experience with spotlight lighting', accent: '#b8a99a' },
 ]
 
 export default function HomePage() {

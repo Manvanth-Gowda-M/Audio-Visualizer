@@ -21,11 +21,18 @@ const CinematicVinylUIThumb = dynamic(() => import('./thumbs/CinematicVinylUIThu
 const NeonGlassThumb        = dynamic(() => import('./thumbs/NeonGlassThumb'),       { ssr: false })
 const NeumorphicSphereThumb = dynamic(() => import('./thumbs/NeumorphicSphereThumb'), { ssr: false })
 const WarmFloatingPlayerThumb = dynamic(() => import('./thumbs/WarmFloatingPlayerThumb'), { ssr: false })
+const AestheticCollageThumb = dynamic(() => import('./thumbs/AestheticCollageThumb'), { ssr: false })
+const PremiumFilmThumb      = dynamic(() => import('./thumbs/PremiumFilmThumb'),      { ssr: false })
+const LuxuryGlassThumb      = dynamic(() => import('./thumbs/LuxuryGlassThumb'),      { ssr: false })
+const EditorialPolaroidThumb= dynamic(() => import('./thumbs/EditorialPolaroidThumb'),{ ssr: false })
+const ScrapbookJournalThumb = dynamic(() => import('./thumbs/ScrapbookJournalThumb'), { ssr: false })
+const CyberpunkHologramThumb= dynamic(() => import('./thumbs/CyberpunkHologramThumb'),{ ssr: false })
+const MuseumGalleryThumb    = dynamic(() => import('./thumbs/MuseumGalleryThumb'),    { ssr: false })
 
 type TemplateId =
   | 'circle' | 'vinyl' | 'waveform' | 'glitch'
   | 'particles' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular'
-  | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'neon_glass' | 'neumorph_sphere' | 'warm_floating'
+  | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'neon_glass' | 'neumorph_sphere' | 'warm_floating' | 'aesthetic' | 'premium_film' | 'luxury_glass' | 'editorial_polaroid' | 'scrapbook_journal' | 'cyberpunk_hologram' | 'museum_gallery'
 
 interface Props {
   id: TemplateId
@@ -58,6 +65,13 @@ function ThumbRenderer({ id, accent }: { id: TemplateId; accent: string }) {
   if (id === 'neon_glass')         return <NeonGlassThumb />
   if (id === 'neumorph_sphere')     return <NeumorphicSphereThumb />
   if (id === 'warm_floating')        return <WarmFloatingPlayerThumb />
+  if (id === 'aesthetic')            return <AestheticCollageThumb />
+  if (id === 'premium_film')         return <PremiumFilmThumb />
+  if (id === 'luxury_glass')         return <LuxuryGlassThumb />
+  if (id === 'editorial_polaroid')   return <EditorialPolaroidThumb />
+  if (id === 'scrapbook_journal')    return <ScrapbookJournalThumb />
+  if (id === 'cyberpunk_hologram')   return <CyberpunkHologramThumb />
+  if (id === 'museum_gallery')       return <MuseumGalleryThumb />
   return null
 }
 
@@ -76,7 +90,7 @@ export default function TemplateCard({ id, accent, name, tag, desc, onClick, sel
         <ThumbRenderer id={id} accent={accent} />
         
         {/* Overlay hover effect */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">
           <span className="neo-btn px-6 py-2" style={{ backgroundColor: accent, color: '#000' }}>
             USE THIS →
           </span>
@@ -84,7 +98,7 @@ export default function TemplateCard({ id, accent, name, tag, desc, onClick, sel
         
         {/* Tag block */}
         <span
-          className="absolute top-2 left-2 px-3 py-1 text-xs font-black uppercase text-black border-2 border-black"
+          className="absolute top-2 left-2 px-3 py-1 text-xs font-black uppercase text-black border-2 border-black z-30"
           style={{ backgroundColor: accent }}
         >
           {tag}
