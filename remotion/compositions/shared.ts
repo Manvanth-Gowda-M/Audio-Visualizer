@@ -15,6 +15,7 @@ export interface VisualizerProps {
   artistName?: string
   albumName?: string
   personImages?: string[]
+  quoteText?: string
 }
 
 export function getActiveLyric(

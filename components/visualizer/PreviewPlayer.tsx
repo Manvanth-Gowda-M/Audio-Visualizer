@@ -86,6 +86,24 @@ const compositions = {
   museum_gallery: dynamic(() =>
     import('@/remotion/compositions/MuseumGalleryVisualizer').then((m) => m.MuseumGalleryVisualizer)
   ),
+  sunlight_diary: dynamic(() =>
+    import('@/remotion/compositions/SunlightDiaryVisualizer').then((m) => m.SunlightDiaryVisualizer)
+  ),
+  dreamy_collage: dynamic(() =>
+    import('@/remotion/compositions/DreamyCollageVisualizer').then((m) => m.DreamyCollageVisualizer)
+  ),
+  golden_floral: dynamic(() =>
+    import('@/remotion/compositions/GoldenFloralVisualizer').then((m) => m.GoldenFloralVisualizer)
+  ),
+  vintage_scrapbook: dynamic(() =>
+    import('@/remotion/compositions/VintageScrapbookVisualizer').then((m) => m.VintageScrapbookVisualizer)
+  ),
+  romantic_tabletop: dynamic(() =>
+    import('@/remotion/compositions/RomanticTabletopVisualizer').then((m) => m.RomanticTabletopVisualizer)
+  ),
+  geometric_vinyl: dynamic(() =>
+    import('@/remotion/compositions/GeometricVinylVisualizer').then((m) => m.GeometricVinylVisualizer)
+  ),
 }
 
 export default function PreviewPlayer() {
@@ -113,8 +131,8 @@ export default function PreviewPlayer() {
   // Preview: cap at 60s so it loads fast. Full render uses actual duration.
   const previewDuration = Math.min(store.duration || 30, 60)
   const isApple = store.template === 'appleplayer'
-  const isPortrait = isApple || store.template === 'circular' || ['premium_film', 'luxury_glass', 'editorial_polaroid'].includes(store.template)
-  const isSquare = store.template === 'retro'
+  const isPortrait = isApple || store.template === 'circular' || ['premium_film', 'luxury_glass', 'editorial_polaroid', 'sunlight_diary', 'dreamy_collage', 'golden_floral', 'vintage_scrapbook', 'romantic_tabletop'].includes(store.template)
+  const isSquare = ['retro', 'geometric_vinyl'].includes(store.template)
 
   const inputProps = isApple ? {
     audioSrc: audioSrcForVisualizer,
@@ -138,6 +156,7 @@ export default function PreviewPlayer() {
     songTitle: store.songTitle,
     artistName: store.artist,
     albumName: store.labelText || 'Album',
+    quoteText: store.quoteText,
   }
 
   return (

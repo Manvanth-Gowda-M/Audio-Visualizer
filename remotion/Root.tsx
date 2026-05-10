@@ -26,6 +26,12 @@ import { EditorialPolaroidVisualizer } from './compositions/EditorialPolaroidVis
 import { ScrapbookJournalVisualizer } from './compositions/ScrapbookJournalVisualizer'
 import { CyberpunkHologramVisualizer } from './compositions/CyberpunkHologramVisualizer'
 import { MuseumGalleryVisualizer } from './compositions/MuseumGalleryVisualizer'
+import { SunlightDiaryVisualizer } from './compositions/SunlightDiaryVisualizer'
+import { DreamyCollageVisualizer } from './compositions/DreamyCollageVisualizer'
+import { GoldenFloralVisualizer } from './compositions/GoldenFloralVisualizer'
+import { VintageScrapbookVisualizer } from './compositions/VintageScrapbookVisualizer'
+import { RomanticTabletopVisualizer } from './compositions/RomanticTabletopVisualizer'
+import { GeometricVinylVisualizer } from './compositions/GeometricVinylVisualizer'
 
 import { VisualizerProps } from './compositions/shared'
 
@@ -173,6 +179,66 @@ export const RemotionRoot = () => (
       fps={30}
       width={1080}
       height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="sunlight_diary"
+      component={SunlightDiaryVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={{
+        ...defaultProps,
+        quoteText: 'Collect moments,\nnot things.'
+      }}
+    />
+    <Composition
+      id="dreamy_collage"
+      component={DreamyCollageVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={{
+        ...defaultProps,
+        quoteText: 'Collect beautiful\nmoments'
+      }}
+    />
+    <Composition
+      id="golden_floral"
+      component={GoldenFloralVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="vintage_scrapbook"
+      component={VintageScrapbookVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="romantic_tabletop"
+      component={RomanticTabletopVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+    <Composition
+      id="geometric_vinyl"
+      component={GeometricVinylVisualizer as unknown as React.ComponentType<Record<string, unknown>>}
+      durationInFrames={210 * 30}
+      fps={30}
+      width={1080}
+      height={1080}
       defaultProps={defaultProps}
     />
   </>

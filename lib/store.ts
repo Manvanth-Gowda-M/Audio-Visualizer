@@ -73,10 +73,11 @@ export interface AppState {
   lyricsSynced: boolean
   lyricsFont: string
 
-  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular' | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'aesthetic'
+  template: 'circle' | 'waveform' | 'particles' | 'vinyl' | 'glitch' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular' | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'neon_glass' | 'neumorph_sphere' | 'warm_floating' | 'aesthetic' | 'premium_film' | 'luxury_glass' | 'editorial_polaroid' | 'scrapbook_journal' | 'cyberpunk_hologram' | 'museum_gallery' | 'sunlight_diary' | 'dreamy_collage' | 'golden_floral' | 'vintage_scrapbook' | 'romantic_tabletop' | 'geometric_vinyl'
   typoStyle: 'minimal' | 'bold' | 'neon'
   accentColor: string
   labelText: string
+  quoteText: string
   // Visual effects
   effects: string[]  // array of active effect IDs
   // Export settings
@@ -118,6 +119,7 @@ export interface AppState {
   setTypoStyle: (style: AppState['typoStyle']) => void
   setAccentColor: (color: string) => void
   setLabelText: (text: string) => void
+  setQuoteText: (text: string) => void
   setThemeColor: (color: AppState['themeColor']) => void
   setFontStyle: (style: AppState['fontStyle']) => void
   setCurrentStep: (step: 1 | 2 | 3) => void
@@ -155,6 +157,7 @@ const initialState = {
   typoStyle: 'minimal' as AppState['typoStyle'],
   accentColor: '#a855f7',
   labelText: 'Now Playing',
+  quoteText: 'Collect moments, not things.',
   themeColor: 'white' as AppState['themeColor'],
   fontStyle: 'minimal' as AppState['fontStyle'],
   projectId: null as string | null,
@@ -220,6 +223,7 @@ export const useStore = create<AppState>((set) => ({
   setTypoStyle: (style) => set({ typoStyle: style }),
   setAccentColor: (color) => set({ accentColor: color }),
   setLabelText: (text) => set({ labelText: text }),
+  setQuoteText: (text) => set({ quoteText: text }),
   setThemeColor: (color) => set({ themeColor: color }),
   setFontStyle: (style) => set({ fontStyle: style }),
   setCurrentStep: (step: 1|2|3) => set({ currentStep: step }),

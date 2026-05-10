@@ -28,11 +28,17 @@ const EditorialPolaroidThumb= dynamic(() => import('./thumbs/EditorialPolaroidTh
 const ScrapbookJournalThumb = dynamic(() => import('./thumbs/ScrapbookJournalThumb'), { ssr: false })
 const CyberpunkHologramThumb= dynamic(() => import('./thumbs/CyberpunkHologramThumb'),{ ssr: false })
 const MuseumGalleryThumb    = dynamic(() => import('./thumbs/MuseumGalleryThumb'),    { ssr: false })
+const SunlightDiaryThumb    = dynamic(() => import('./thumbs/SunlightDiaryThumb'),    { ssr: false })
+const DreamyCollageThumb    = dynamic(() => import('./thumbs/DreamyCollageThumb'),    { ssr: false })
+const GoldenFloralThumb     = dynamic(() => import('./thumbs/GoldenFloralThumb'),     { ssr: false })
+const VintageScrapbookThumb = dynamic(() => import('./thumbs/VintageScrapbookThumb'), { ssr: false })
+const RomanticTabletopThumb = dynamic(() => import('./thumbs/RomanticTabletopThumb'), { ssr: false })
+const GeometricVinylThumb   = dynamic(() => import('./thumbs/GeometricVinylThumb'),   { ssr: false })
 
 type TemplateId =
   | 'circle' | 'vinyl' | 'waveform' | 'glitch'
   | 'particles' | 'cassette' | 'neonplayer' | 'appleplayer' | 'poster' | 'dashboard' | 'circular'
-  | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'neon_glass' | 'neumorph_sphere' | 'warm_floating' | 'aesthetic' | 'premium_film' | 'luxury_glass' | 'editorial_polaroid' | 'scrapbook_journal' | 'cyberpunk_hologram' | 'museum_gallery'
+  | 'cinematic' | 'editorial' | 'symmetrical' | 'retro' | 'retro_cassette' | 'cinematic_vinyl_ui' | 'neon_glass' | 'neumorph_sphere' | 'warm_floating' | 'aesthetic' | 'premium_film' | 'luxury_glass' | 'editorial_polaroid' | 'scrapbook_journal' | 'cyberpunk_hologram' | 'museum_gallery' | 'sunlight_diary' | 'dreamy_collage' | 'golden_floral' | 'vintage_scrapbook' | 'romantic_tabletop' | 'geometric_vinyl'
 
 interface Props {
   id: TemplateId
@@ -72,6 +78,12 @@ function ThumbRenderer({ id, accent }: { id: TemplateId; accent: string }) {
   if (id === 'scrapbook_journal')    return <ScrapbookJournalThumb />
   if (id === 'cyberpunk_hologram')   return <CyberpunkHologramThumb />
   if (id === 'museum_gallery')       return <MuseumGalleryThumb />
+  if (id === 'sunlight_diary')       return <SunlightDiaryThumb />
+  if (id === 'dreamy_collage')       return <DreamyCollageThumb />
+  if (id === 'golden_floral')        return <GoldenFloralThumb />
+  if (id === 'vintage_scrapbook')    return <VintageScrapbookThumb />
+  if (id === 'romantic_tabletop')    return <RomanticTabletopThumb />
+  if (id === 'geometric_vinyl')      return <GeometricVinylThumb />
   return null
 }
 
