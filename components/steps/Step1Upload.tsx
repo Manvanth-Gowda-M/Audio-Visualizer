@@ -316,8 +316,8 @@ export default function Step1Upload() {
         </div>
       </div>
 
-      {/* Collage Images (Only for aesthetic template) */}
-      {store.template === 'aesthetic' && (
+      {/* Collage Images (For templates that support them) */}
+      {['aesthetic', 'vintage_scrapbook', 'sunlight_diary', 'scrapbook_journal', 'romantic_tabletop', 'premium_film', 'museum_gallery', 'luxury_glass', 'golden_floral', 'editorial_polaroid', 'dreamy_collage', 'cyberpunk_hologram'].includes(store.template) && (
         <div
           onDragOver={(e) => { e.preventDefault(); setPersonDrag(true) }}
           onDragLeave={() => setPersonDrag(false)}

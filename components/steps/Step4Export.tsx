@@ -83,13 +83,19 @@ export default function Step4Export() {
         scrapbook_journal:   () => import('@/remotion/compositions/ScrapbookJournalVisualizer').then(m => m.ScrapbookJournalVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         cyberpunk_hologram:  () => import('@/remotion/compositions/CyberpunkHologramVisualizer').then(m => m.CyberpunkHologramVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
         museum_gallery:      () => import('@/remotion/compositions/MuseumGalleryVisualizer').then(m => m.MuseumGalleryVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        sunlight_diary:      () => import('@/remotion/compositions/SunlightDiaryVisualizer').then(m => m.SunlightDiaryVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        dreamy_collage:      () => import('@/remotion/compositions/DreamyCollageVisualizer').then(m => m.DreamyCollageVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        golden_floral:       () => import('@/remotion/compositions/GoldenFloralVisualizer').then(m => m.GoldenFloralVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        vintage_scrapbook:   () => import('@/remotion/compositions/VintageScrapbookVisualizer').then(m => m.VintageScrapbookVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        romantic_tabletop:   () => import('@/remotion/compositions/RomanticTabletopVisualizer').then(m => m.RomanticTabletopVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
+        geometric_vinyl:     () => import('@/remotion/compositions/GeometricVinylVisualizer').then(m => m.GeometricVinylVisualizer as unknown as React.ComponentType<Record<string, unknown>>),
       }
 
       const component = await (compositionMap[store.template] ?? compositionMap.circle)()
 
       const isApple    = store.template === 'appleplayer'
-      const isPortrait = isApple || store.template === 'circular' || ['premium_film', 'luxury_glass', 'editorial_polaroid', 'scrapbook_journal', 'cyberpunk_hologram', 'museum_gallery'].includes(store.template)
-      const isSquare   = store.template === 'retro'
+      const isPortrait = isApple || store.template === 'circular' || ['premium_film', 'luxury_glass', 'editorial_polaroid', 'scrapbook_journal', 'cyberpunk_hologram', 'museum_gallery', 'sunlight_diary', 'dreamy_collage', 'golden_floral', 'vintage_scrapbook', 'romantic_tabletop'].includes(store.template)
+      const isSquare   = ['retro', 'geometric_vinyl'].includes(store.template)
       const q          = qualityDims[store.exportQuality] ?? qualityDims.hd
       const fps        = q.fps
       const jpegQ      = q.jpegQ
