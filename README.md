@@ -12,7 +12,7 @@ npm run dev
 
 ## How it works
 
-1. **Upload** — Drop an MP3/WAV + album artwork
+1. **Upload** — Drop an MP3/WAV + album artwork or photo 
 2. **Lyrics** — Auto-fetched from LRCLib or Genius (free, no API key)
 3. **Customize** — Pick a visualizer template, typography style, and accent color
 4. **Export** — Render and download your MP4
